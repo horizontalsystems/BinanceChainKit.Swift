@@ -3,15 +3,32 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2FA5D1AE8DC4F62119811D6F /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D994B99A65775E087086 /* Parser.swift */; };
+		2FA5D30C07AD8BEB427BBCFB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DADBADF2AD41E5C42B50 /* Extensions.swift */; };
+		2FA5D4121857473A3E42E36C /* DexProtobuf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D806AC44C116C08BCFE6 /* DexProtobuf.swift */; };
+		2FA5D5209A54F2F00D865C2F /* AcceleratedNodeApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D5641E96FD7107A0FC9B /* AcceleratedNodeApiProvider.swift */; };
+		2FA5D64F1C8586E0D5C790CA /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D6C70D965D0E6E49BB0C /* Messages.swift */; };
+		2FA5D6D8A50565F3FF5262E6 /* TransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D6465CB3D61C28C8E9A4 /* TransactionInfo.swift */; };
+		2FA5D740360FAAFC19EE7B4E /* BinanceChainKitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DA833B028340D174DE33 /* BinanceChainKitState.swift */; };
+		2FA5D808BFB26D88E81F7E7E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DB3A9B3BC1A05F84598E /* Models.swift */; };
+		2FA5D8C98BF02939A764BECC /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D7C08ADA6DE62AFDD68A /* Protocols.swift */; };
+		2FA5D96E39BD23BA95903CE8 /* HexEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DF446305FDF08EA473DB /* HexEncoding.swift */; };
+		2FA5DA2D1A82722BF1E69279 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DAB42DF0DD2BA111DF00 /* Bech32.swift */; };
+		2FA5DA51ECE6B42A5FA25843 /* SegWitBech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DC0F24F62938171D4A3A /* SegWitBech32.swift */; };
+		2FA5DCA229AFEED9FC3F130D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DC3FB6AEE5C069E2ACA7 /* Wallet.swift */; };
+		2FA5DE1763EC069B2F0A1CDC /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D06BD6F91EDC72377030 /* Error.swift */; };
+		2FA5DE2093940926F02CFF41 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DC072C6789E54BED6287 /* Types.swift */; };
 		876BCC91C128EAF3A7586F30 /* Pods_BinanceChainKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E429D73276112CD90629EF /* Pods_BinanceChainKitTests.framework */; };
 		CE92625CACF7FE96AB1A4F8C /* Pods_BinanceChainKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D52230C02808E1E44E6D2838 /* Pods_BinanceChainKit.framework */; };
 		D0B7A9D622E81F4D00831556 /* BinanceChainKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D0B7A9D422E81F4D00831556 /* BinanceChainKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D0B7AA0122E820A400831556 /* BinanceChainKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B7AA0022E820A400831556 /* BinanceChainKitTests.swift */; };
 		D0B7AA0322E820A400831556 /* BinanceChainKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0B7A9D122E81F4D00831556 /* BinanceChainKit.framework */; };
+		D0B7AA3F22E82BCB00831556 /* BinanceChainKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B7AA3E22E82BCB00831556 /* BinanceChainKit.swift */; };
+		D0B7AA4122E82CE600831556 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B7AA4022E82CE600831556 /* Logger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,6 +43,21 @@
 
 /* Begin PBXFileReference section */
 		02CA57BCD69E2B771ADB1B50 /* Pods-BinanceChainKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinanceChainKitTests.release.xcconfig"; path = "Target Support Files/Pods-BinanceChainKitTests/Pods-BinanceChainKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		2FA5D06BD6F91EDC72377030 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		2FA5D5641E96FD7107A0FC9B /* AcceleratedNodeApiProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AcceleratedNodeApiProvider.swift; sourceTree = "<group>"; };
+		2FA5D6465CB3D61C28C8E9A4 /* TransactionInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionInfo.swift; sourceTree = "<group>"; };
+		2FA5D6C70D965D0E6E49BB0C /* Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		2FA5D7C08ADA6DE62AFDD68A /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		2FA5D806AC44C116C08BCFE6 /* DexProtobuf.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DexProtobuf.swift; sourceTree = "<group>"; };
+		2FA5D994B99A65775E087086 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		2FA5DA833B028340D174DE33 /* BinanceChainKitState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinanceChainKitState.swift; sourceTree = "<group>"; };
+		2FA5DAB42DF0DD2BA111DF00 /* Bech32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
+		2FA5DADBADF2AD41E5C42B50 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		2FA5DB3A9B3BC1A05F84598E /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		2FA5DC072C6789E54BED6287 /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		2FA5DC0F24F62938171D4A3A /* SegWitBech32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegWitBech32.swift; sourceTree = "<group>"; };
+		2FA5DC3FB6AEE5C069E2ACA7 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
+		2FA5DF446305FDF08EA473DB /* HexEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HexEncoding.swift; sourceTree = "<group>"; };
 		92C6AD874343A41C781A5492 /* Pods-BinanceChainKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinanceChainKit.release.xcconfig"; path = "Target Support Files/Pods-BinanceChainKit/Pods-BinanceChainKit.release.xcconfig"; sourceTree = "<group>"; };
 		BFC9352CFF7DF4260C7599E4 /* Pods-BinanceChainKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinanceChainKit.debug.xcconfig"; path = "Target Support Files/Pods-BinanceChainKit/Pods-BinanceChainKit.debug.xcconfig"; sourceTree = "<group>"; };
 		CEE5AC283700738933CAFFC7 /* Pods-BinanceChainKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinanceChainKitTests.debug.xcconfig"; path = "Target Support Files/Pods-BinanceChainKitTests/Pods-BinanceChainKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -35,6 +67,8 @@
 		D0B7A9FE22E820A400831556 /* BinanceChainKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BinanceChainKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0B7AA0022E820A400831556 /* BinanceChainKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceChainKitTests.swift; sourceTree = "<group>"; };
 		D0B7AA0222E820A400831556 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D0B7AA3E22E82BCB00831556 /* BinanceChainKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinanceChainKit.swift; sourceTree = "<group>"; };
+		D0B7AA4022E82CE600831556 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		D52230C02808E1E44E6D2838 /* Pods_BinanceChainKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BinanceChainKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7E429D73276112CD90629EF /* Pods_BinanceChainKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BinanceChainKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -60,6 +94,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2FA5D0479C94982744D14612 /* Protobuf */ = {
+			isa = PBXGroup;
+			children = (
+				2FA5D806AC44C116C08BCFE6 /* DexProtobuf.swift */,
+			);
+			path = Protobuf;
+			sourceTree = "<group>";
+		};
+		2FA5D5691FDD3FD77FB3CB9F /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				2FA5DAB42DF0DD2BA111DF00 /* Bech32.swift */,
+				2FA5DC0F24F62938171D4A3A /* SegWitBech32.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2FA5D656DEDC549C10A7D143 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2FA5DB3A9B3BC1A05F84598E /* Models.swift */,
+				2FA5D6465CB3D61C28C8E9A4 /* TransactionInfo.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		891FDDFF71C4D59FDACF4E71 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +152,10 @@
 		D0B7A9D322E81F4D00831556 /* BinanceChainKit */ = {
 			isa = PBXGroup;
 			children = (
+				D0B7AA3D22E82BBD00831556 /* Core */,
+				2FA5D5691FDD3FD77FB3CB9F /* Helpers */,
+				2FA5D656DEDC549C10A7D143 /* Models */,
+				2FA5D0479C94982744D14612 /* Protobuf */,
 				D0B7A9D422E81F4D00831556 /* BinanceChainKit.h */,
 				D0B7A9D522E81F4D00831556 /* Info.plist */,
 			);
@@ -105,6 +169,25 @@
 				D0B7AA0222E820A400831556 /* Info.plist */,
 			);
 			path = BinanceChainKitTests;
+			sourceTree = "<group>";
+		};
+		D0B7AA3D22E82BBD00831556 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				2FA5D5641E96FD7107A0FC9B /* AcceleratedNodeApiProvider.swift */,
+				D0B7AA3E22E82BCB00831556 /* BinanceChainKit.swift */,
+				2FA5DA833B028340D174DE33 /* BinanceChainKitState.swift */,
+				D0B7AA4022E82CE600831556 /* Logger.swift */,
+				2FA5D06BD6F91EDC72377030 /* Error.swift */,
+				2FA5DADBADF2AD41E5C42B50 /* Extensions.swift */,
+				2FA5DF446305FDF08EA473DB /* HexEncoding.swift */,
+				2FA5D6C70D965D0E6E49BB0C /* Messages.swift */,
+				2FA5D994B99A65775E087086 /* Parser.swift */,
+				2FA5D7C08ADA6DE62AFDD68A /* Protocols.swift */,
+				2FA5DC072C6789E54BED6287 /* Types.swift */,
+				2FA5DC3FB6AEE5C069E2ACA7 /* Wallet.swift */,
+			);
+			path = Core;
 			sourceTree = "<group>";
 		};
 		F87F46AAA5C2710B5947DE36 /* Pods */ = {
@@ -184,6 +267,7 @@
 				TargetAttributes = {
 					D0B7A9D022E81F4D00831556 = {
 						CreatedOnToolsVersion = 10.3;
+						LastSwiftMigration = 1030;
 					};
 					D0B7A9FD22E820A400831556 = {
 						CreatedOnToolsVersion = 10.3;
@@ -294,6 +378,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0B7AA3F22E82BCB00831556 /* BinanceChainKit.swift in Sources */,
+				D0B7AA4122E82CE600831556 /* Logger.swift in Sources */,
+				2FA5D6D8A50565F3FF5262E6 /* TransactionInfo.swift in Sources */,
+				2FA5D30C07AD8BEB427BBCFB /* Extensions.swift in Sources */,
+				2FA5DA2D1A82722BF1E69279 /* Bech32.swift in Sources */,
+				2FA5DA51ECE6B42A5FA25843 /* SegWitBech32.swift in Sources */,
+				2FA5D8C98BF02939A764BECC /* Protocols.swift in Sources */,
+				2FA5D64F1C8586E0D5C790CA /* Messages.swift in Sources */,
+				2FA5D1AE8DC4F62119811D6F /* Parser.swift in Sources */,
+				2FA5D5209A54F2F00D865C2F /* AcceleratedNodeApiProvider.swift in Sources */,
+				2FA5DE1763EC069B2F0A1CDC /* Error.swift in Sources */,
+				2FA5D4121857473A3E42E36C /* DexProtobuf.swift in Sources */,
+				2FA5DE2093940926F02CFF41 /* Types.swift in Sources */,
+				2FA5D96E39BD23BA95903CE8 /* HexEncoding.swift in Sources */,
+				2FA5DCA229AFEED9FC3F130D /* Wallet.swift in Sources */,
+				2FA5D740360FAAFC19EE7B4E /* BinanceChainKitState.swift in Sources */,
+				2FA5D808BFB26D88E81F7E7E /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,6 +543,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BFC9352CFF7DF4260C7599E4 /* Pods-BinanceChainKit.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -459,6 +561,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.horizontalsystems.BinanceChainKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -468,6 +571,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 92C6AD874343A41C781A5492 /* Pods-BinanceChainKit.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;

@@ -1,41 +1,49 @@
 PODS:
+  - Alamofire (4.8.2)
   - Cuckoo (1.0.6)
   - HSCryptoKit (1.4.2)
   - HSHDWalletKit (1.1):
     - HSCryptoKit (~> 1.4)
   - Nimble (8.0.2)
   - Quick (2.1.0)
-  - RxBlocking (5.0.0):
-    - RxSwift (~> 5)
   - RxSwift (5.0.0)
+  - SwiftProtobuf (1.6.0)
+  - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
+  - Alamofire (~> 4.0)
   - Cuckoo
   - HSCryptoKit (~> 1.4)
   - HSHDWalletKit (~> 1.1)
   - Nimble
   - Quick
-  - RxBlocking (~> 5.0)
+  - RxSwift
+  - SwiftProtobuf
+  - SwiftyJSON (~> 4.3)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Alamofire
     - Cuckoo
     - HSCryptoKit
     - HSHDWalletKit
     - Nimble
     - Quick
-    - RxBlocking
     - RxSwift
+    - SwiftProtobuf
+    - SwiftyJSON
 
 SPEC CHECKSUMS:
+  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Cuckoo: 8074fc309159c4862665b83798f5ad03e061e8bd
   HSCryptoKit: 4dcb2506b5d8d85c4a31ab57734df3d1f7ea17f9
   HSHDWalletKit: 1d946bd24bd307cc494141f4e518d25db814f050
   Nimble: 622629381bda1dd5678162f21f1368cec7cbba60
   Quick: 4be43f6634acfa727dd106bdf3929ce125ffa79d
-  RxBlocking: c67185d26498ea3cbe3e121917c3c16739e43123
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
+  SwiftProtobuf: e905ca1366405696411aaf174411c4b19c0ef73d
+  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: 646b7add584bfcd5121a4d54aa783b19dbeb306b
+PODFILE CHECKSUM: 2911dcce89ea8fa466158a889318ee57230f216d
 
 COCOAPODS: 1.7.5
