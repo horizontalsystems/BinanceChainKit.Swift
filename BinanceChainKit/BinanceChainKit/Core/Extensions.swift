@@ -92,12 +92,20 @@ extension Date {
 
 extension String {
 
-    func toDate() -> Date? {
+    func toDateFromMilliseconds() -> Date? {
         guard let milliSeconds = Double(self) else {
             return nil
         }
 
         return Date(millisecondsSince1970: milliSeconds)
+    }
+
+    func toDate() -> Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)!
+
+        return formatter.date(from: self)
     }
 
 }

@@ -1,85 +1,47 @@
-import Foundation
-import HSCryptoKit
-import HSHDWalletKit
 import RxSwift
+import HSHDWalletKit
 
 public class BinanceChainKit {
-
-    private let wallet: Wallet
-    private let symbol: String
-    private let apiProvider: IApiProvider
-    private let state: BinanceChainKitState
-
-    private let logger: Logger?
     private let disposeBag = DisposeBag()
 
+    private let balanceManager: BalanceManager
+    private let transactionManager: TransactionManager
+    private let reachabilityManager: ReachabilityManager
+
+    private let logger: Logger
+
+    public let account: String
+    public var latestBlockHeight: Int?
     private let lastBlockHeightSubject = PublishSubject<Int>()
-    private let syncStateSubject = PublishSubject<SyncState>()
-    private let balanceSubject = PublishSubject<String>()
-    private let transactionsSubject = PublishSubject<[TransactionInfo]>()
+    private let syncStateSubject = PublishSubject<BinanceChainKit.SyncState>()
 
+    private var assets = [Asset]()
 
-    public private(set) var syncState: SyncState = .notSynced {
+    public var syncState: BinanceChainKit.SyncState = .notSynced {
         didSet {
-            if syncState != oldValue {
-                syncStateSubject.onNext(syncState)
-            }
+            syncStateSubject.onNext(syncState)
         }
     }
 
-    init(symbol: String, wallet: Wallet, apiProvider: IApiProvider, state: BinanceChainKitState = BinanceChainKitState(), logger: Logger? = nil) {
-        self.symbol = symbol
-        self.wallet = wallet
-        self.apiProvider = apiProvider
-        self.state = state
+    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, logger: Logger) {
+        self.account = account
+        self.balanceManager = balanceManager
+        self.transactionManager = transactionManager
+        self.reachabilityManager = reachabilityManager
         self.logger = logger
+
+        latestBlockHeight = balanceManager.latestBlock?.height
+
+        reachabilityManager.reachabilitySignal
+                .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+                .subscribe(onNext: { [weak self] in
+                    self?.refresh()
+                })
+                .disposed(by: disposeBag)
     }
 
-    func onUpdate(nodeInfo: NodeInfo) {
-        wallet.chainId = nodeInfo.network
-
-        guard let lastBlockHeightValue = nodeInfo.syncInfo["latest_block_height"],
-              let lastBlockHeightNumber = lastBlockHeightValue as? NSNumber else {
-            return
-        }
-
-        let lastBlockHeight = Int(lastBlockHeightNumber)
-        guard state.lastBlockHeight != lastBlockHeight else {
-            return
-        }
-
-        state.lastBlockHeight = lastBlockHeight
-        lastBlockHeightSubject.onNext(lastBlockHeight)
-    }
-
-    func onUpdate(account: Account) {
-        wallet.accountNumber = account.accountNumber
-        wallet.sequence = account.sequence
-
-        var balance: Double = 0
-        for retrievedBalance in account.balances {
-            if retrievedBalance.symbol == symbol {
-                balance = Double(retrievedBalance.free)
-            }
-        }
-
-        guard state.balance != balance else {
-            return
-        }
-
-        state.balance = balance
-
-        balanceSubject.onNext(balance.description)
-    }
-
-    func onUpdate(syncState: SyncState) {
-        syncStateSubject.onNext(syncState)
-    }
-
-    func onUpdate(transactions: [Tx]) {
-        transactionsSubject.onNext(transactions.map {
-            TransactionInfo(tx: $0)
-        })
+    private func asset(symbol: String) -> Asset? {
+        return assets.first { $0.symbol == symbol }
     }
 
 }
@@ -88,90 +50,112 @@ public class BinanceChainKit {
 
 extension BinanceChainKit {
 
-    public func start() {
-        Single.zip(
-                        apiProvider.nodeInfoSingle(),
-                        apiProvider.accountSingle()
-                )
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-                .subscribe(onSuccess: { [weak self] nodeInfo, account in
-                    self?.onUpdate(nodeInfo: nodeInfo)
-                    self?.onUpdate(account: account)
+    public func register(symbol: String) -> Asset {
+        let balance = balanceManager.balance(symbol: symbol)?.amount ?? 0
+        let asset = Asset(symbol: symbol, balance: balance)
 
-                    self?.syncState = .synced
-                }, onError: { [weak self] error in
-                    self?.syncState = .notSynced
-                    self?.logger?.error("Sync Failed: lastBlockHeight and balance: \(error)")
-                })
-                .disposed(by: disposeBag)
+        assets.append(asset)
+
+        return asset
     }
 
-    public func stop() {
+    public func unregister(asset: Asset) {
+        assets.removeAll { $0 == asset }
     }
 
     public func refresh() {
-    }
-
-    public var lastBlockHeight: Int? {
-        return state.lastBlockHeight
-    }
-
-    public var balance: String? {
-        return state.balance?.description
-    }
-
-    public var receiveAddress: String {
-        return wallet.address
-    }
-
-    public func transactionsSingle(fromHash: String?, limit: Int?) -> Single<[TransactionInfo]> {
-        return apiProvider.transactionsSingle(symbol: symbol).map {
-            $0.map { TransactionInfo(tx: $0) }
+        guard reachabilityManager.isReachable else {
+            syncState = .notSynced
+            return
         }
+
+        guard syncState != .syncing else {
+            logger.verbose("Already syncing balances")
+            return
+        }
+
+        logger.verbose("Syncing")
+        syncState = .syncing
+
+        balanceManager.sync(account: account)
+        transactionManager.sync(account: account)
     }
 
     public var lastBlockHeightObservable: Observable<Int> {
         return lastBlockHeightSubject.asObservable()
     }
 
-    public var balanceObservable: Observable<String> {
-        return balanceSubject.asObservable()
-    }
-
-    public var syncStateObservable: Observable<SyncState> {
+    public var syncStateObservable: Observable<BinanceChainKit.SyncState> {
         return syncStateSubject.asObservable()
     }
 
-    public var transactionsObservable: Observable<[TransactionInfo]> {
-        return transactionsSubject.asObservable()
-    }
-
-    public func sendSingle(to: String, value: Double) -> Single<TransactionInfo> {
-        return apiProvider.sendSingle(symbol: symbol, to: to, amount: value, wallet: wallet).map {
-            TransactionInfo(tx: $0)
+    public func transactionsSingle(symbol: String, fromTransactionHash: String? = nil, limit: Int? = nil) -> Single<[TransactionInfo]> {
+        return transactionManager.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit).map {
+            $0.map { transaction in TransactionInfo(transaction: transaction) }
         }
     }
 
-    public func sendSingle(to: String, value: String) -> Single<TransactionInfo> {
-        guard let value = Double(value) else {
-            return Single.error(SendError.invalidValue)
-        }
+    public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String?> {
+        return transactionManager.sendSingle(account: account, symbol: symbol, to: to, amount: amount, memo: memo)
+                .do(onSuccess: { [weak self] _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self?.refresh()
+                    }
+                })
+    }
 
-        return sendSingle(to: to, value: value)
+}
+
+
+extension BinanceChainKit: IBalanceManagerDelegate {
+
+    func didSync(balances: [Balance], latestBlockHeight: Int) {
+        for balance in balances {
+            asset(symbol: balance.symbol)?.balance = balance.amount
+        }
+        self.latestBlockHeight = latestBlockHeight
+
+        syncState = .synced
+    }
+
+    func didFailToSync() {
+        syncState = .notSynced
+    }
+
+}
+
+extension BinanceChainKit: ITransactionManagerDelegate {
+
+    func didSync(transactions: [Transaction]) {
+        let transactionsMap = Dictionary(grouping: transactions, by: { $0.symbol })
+
+        for (symbol, transactions) in transactionsMap {
+            asset(symbol: symbol)?.transactionsSubject.onNext(transactions.map { TransactionInfo(transaction: $0) })
+        }
     }
 
 }
 
 extension BinanceChainKit {
 
-    public static func instance(words: [String], symbol: String, networkType: NetworkType = .mainNet, walletId: String = "default", minLogLevel: Logger.Level = .error) throws -> BinanceChainKit {
+    public static func instance(words: [String], networkType: NetworkType = .mainNet, walletId: String = "default", minLogLevel: Logger.Level = .error) throws -> BinanceChainKit {
+        let logger = Logger(minLogLevel: minLogLevel)
+
+        let uniqueId = "\(walletId)-\(networkType)"
+        let storage: IStorage = try Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "eos-\(uniqueId)")
+
         let hdWallet = HDWallet(seed: Mnemonic.seed(mnemonic: words), coinType: 714, xPrivKey: 0, xPubKey: 0)
         let wallet = try Wallet(hdWallet: hdWallet, networkType: networkType)
 
-        let apiProvider = AcceleratedNodeApiProvider(endpoint: networkType.endpoint, address: wallet.address)
-        let logger = Logger(minLogLevel: minLogLevel)
+        let apiProvider = AcceleratedNodeApiProvider(endpoint: networkType.endpoint)
 
-        let binanceChainKit = BinanceChainKit(symbol: symbol, wallet: wallet, apiProvider: apiProvider, logger: logger)
+        let balanceManager = BalanceManager(storage: storage, apiProvider: apiProvider, logger: logger)
+        let transactionManager = TransactionManager(storage: storage, wallet: wallet, apiProvider: apiProvider, logger: logger)
+        let reachabilityManager = ReachabilityManager()
+
+        let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, logger: logger)
+        balanceManager.delegate = binanceChainKit
+        transactionManager.delegate = binanceChainKit
 
         return binanceChainKit
     }
@@ -191,7 +175,7 @@ extension BinanceChainKit {
 
         let url = try fileManager
                 .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-                .appendingPathComponent("binance-chain-kit", isDirectory: true)
+                .appendingPathComponent("eos-kit", isDirectory: true)
 
         try fileManager.createDirectory(at: url, withIntermediateDirectories: true)
 
@@ -199,6 +183,7 @@ extension BinanceChainKit {
     }
 
 }
+
 
 extension BinanceChainKit {
 
@@ -220,18 +205,10 @@ extension BinanceChainKit {
         case invalidData
     }
 
-    public enum SyncState: Equatable {
+    public enum SyncState {
         case synced
-        case syncing(progress: Double?)
+        case syncing
         case notSynced
-
-        public static func ==(lhs: BinanceChainKit.SyncState, rhs: BinanceChainKit.SyncState) -> Bool {
-            switch (lhs, rhs) {
-            case (.synced, .synced), (.notSynced, .notSynced): return true
-            case (.syncing(let lhsProgress), .syncing(let rhsProgress)): return lhsProgress == rhsProgress
-            default: return false
-            }
-        }
     }
 
     public enum NetworkType {

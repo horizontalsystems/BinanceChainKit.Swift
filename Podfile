@@ -5,7 +5,7 @@ inhibit_all_warnings!
 
 workspace 'BinanceChainKit'
 
-project 'Demo/Demo'
+project 'BinanceChainKitDemo/BinanceChainKitDemo'
 project 'BinanceChainKit/BinanceChainKit'
 
 def kit_pods
@@ -13,10 +13,10 @@ def kit_pods
   pod 'HSHDWalletKit', '~> 1.1'
 
   pod 'RxSwift'
-  pod 'SwiftProtobuf', :inhibit_warnings => true
+  pod 'GRDB.swift', '~> 4.0'
   pod 'Alamofire', '~> 4.0'
+  pod 'SwiftProtobuf', :inhibit_warnings => true
   pod 'SwiftyJSON', '~> 4.3'
-  # pod 'BinanceChain', :git => 'https://github.com/mh7821/SwiftBinanceChain.git'
 end
 
 target :BinanceChainKit do
@@ -24,8 +24,8 @@ target :BinanceChainKit do
   kit_pods
 end
 
-target :Demo do
-  project 'Demo/Demo'
+target :BinanceChainKitDemo do
+  project 'BinanceChainKitDemo/BinanceChainKitDemo'
   kit_pods
 end
 

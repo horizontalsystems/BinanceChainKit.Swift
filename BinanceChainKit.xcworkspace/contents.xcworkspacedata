@@ -5,7 +5,7 @@
       location = "group:BinanceChainKit/BinanceChainKit.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Demo/Demo.xcodeproj">
+      location = "group:BinanceChainKitDemo/BinanceChainKitDemo.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">

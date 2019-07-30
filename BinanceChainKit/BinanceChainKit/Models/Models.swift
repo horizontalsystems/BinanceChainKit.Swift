@@ -47,7 +47,7 @@ public class Transactions: CustomStringConvertible {
     public var tx: [Tx] = []
 }
 
-public class Transaction: CustomStringConvertible {
+public class ApiTransaction: CustomStringConvertible {
     public var hash: String = ""
     public var log: String = ""
     public var data: String = ""
@@ -58,7 +58,7 @@ public class Transaction: CustomStringConvertible {
 public class Account: CustomStringConvertible {
     public var accountNumber: Int = 0
     public var address: String = ""
-    public var balances: [Balance] = []
+    public var balances: [ApiBalance] = []
     public var publicKey: Data = Data()
     public var sequence: Int = 0
 }
@@ -67,7 +67,7 @@ public class AccountSequence: CustomStringConvertible {
     public var sequence: Int = 0
 }
 
-public class Balance: CustomStringConvertible {
+public class ApiBalance: CustomStringConvertible {
     public var symbol: String = ""
     public var free: Double = 0
     public var locked: Double = 0
@@ -234,6 +234,7 @@ public class Tx: CustomStringConvertible {
     public var txHash: String = ""
     public var txType: TxType = .newOrder
     public var value: String = ""
+    public var memo: String = ""
 }
 
 public class Transfer: CustomStringConvertible {

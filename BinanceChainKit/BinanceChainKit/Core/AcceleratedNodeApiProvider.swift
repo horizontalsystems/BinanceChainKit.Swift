@@ -46,7 +46,7 @@ class AcceleratedNodeApiProvider {
         public var markets: [Market] = []
         public var candlesticks: [Candlestick] = []
         public var ticker: [TickerStatistics] = []
-        public var broadcast: [Transaction] = []
+        public var broadcast: [ApiTransaction] = []
         public var orders: [Order] = []
         public var order: Order = Order()
         public var orderList: OrderList = OrderList()
@@ -61,31 +61,27 @@ class AcceleratedNodeApiProvider {
         public var transactions: Transactions = Transactions()
     }
 
-    public typealias Completion = (AcceleratedNodeApiProvider.Response) -> ()
-
     private var endpoint: String
-    private var address: String
 
-    init(endpoint: String, address: String) {
+    init(endpoint: String) {
         self.endpoint = endpoint
-        self.address = address
     }
 
 
-    private func time(completion: Completion? = nil) {
-        self.api(path: .time, method: .get, parser: TimesParser(), completion: completion)
+    private func time() {
+        self.api(path: .time, method: .get, parser: TimesParser())
     }
 
     private func nodeInfo() -> Single<NodeInfo> {
         return self.api(path: .nodeInfo, method: .get, parser: NodeInfoParser()).map { $0.nodeInfo }
     }
 
-    private func validators(completion: Completion? = nil) {
-        self.api(path: .validators, method: .get, parser: ValidatorsParser(), completion: completion)
+    private func validators() {
+        self.api(path: .validators, method: .get, parser: ValidatorsParser())
     }
 
-    private func peers(completion: Completion? = nil) {
-        self.api(path: .peers, method: .get, parser: PeerParser(), completion: completion)
+    private func peers() {
+        self.api(path: .peers, method: .get, parser: PeerParser())
     }
 
     private func account(address: String) -> Single<Account> {
@@ -93,17 +89,17 @@ class AcceleratedNodeApiProvider {
         return self.api(path: path, method: .get, parser: AccountParser()).map { $0.account }
     }
 
-    private func sequence(address: String, completion: Completion? = nil) {
+    private func sequence(address: String) -> Single<Int> {
         let path = String(format: "%@/%@/%@", Path.account.rawValue, address, Path.sequence.rawValue)
-        self.api(path: path, method: .get, parser: SequenceParser(), completion: completion)
+        return self.api(path: path, method: .get, parser: SequenceParser()).map { $0.sequence }
     }
 
-    private func tx(hash: String, completion: Completion? = nil) {
+    private func tx(hash: String) -> Single<Tx> {
         let path = String(format: "%@/%@?format=json", Path.tx.rawValue, hash)
-        self.api(path: path, method: .get, parser: TxParser(), completion: completion)
+        return self.api(path: path, method: .get, parser: TxParser()).map { $0.tx }
     }
 
-    private func tokens(limit: Limit? = nil, offset: Int? = nil, completion: Completion? = nil) {
+    private func tokens(limit: Limit? = nil, offset: Int? = nil) {
         var parameters: Parameters = [:]
         if let limit = limit {
             parameters["limit"] = limit.rawValue
@@ -111,10 +107,10 @@ class AcceleratedNodeApiProvider {
         if let offset = offset {
             parameters["offset"] = offset
         }
-        self.api(path: .tokens, method: .get, parameters: parameters, parser: TokenParser(), completion: completion)
+        self.api(path: .tokens, method: .get, parameters: parameters, parser: TokenParser())
     }
 
-    private func markets(limit: Limit? = nil, offset: Int? = nil, completion: Completion? = nil) {
+    private func markets(limit: Limit? = nil, offset: Int? = nil) {
         var parameters: Parameters = [:]
         if let limit = limit {
             parameters["limit"] = limit.rawValue
@@ -122,23 +118,23 @@ class AcceleratedNodeApiProvider {
         if let offset = offset {
             parameters["offset"] = offset
         }
-        self.api(path: .markets, method: .get, parameters: parameters, parser: MarketsParser(), completion: completion)
+        self.api(path: .markets, method: .get, parameters: parameters, parser: MarketsParser())
     }
 
-    private func fees(completion: Completion? = nil) {
-        self.api(path: .fees, method: .get, parser: FeesParser(), completion: completion)
+    private func fees() {
+        self.api(path: .fees, method: .get, parser: FeesParser())
     }
 
-    private func marketDepth(symbol: String, limit: Limit? = nil, completion: Completion? = nil) {
+    private func marketDepth(symbol: String, limit: Limit? = nil) {
         var parameters: Parameters = [:]
         parameters["symbol"] = symbol
         if let limit = limit {
             parameters["limit"] = limit.rawValue
         }
-        self.api(path: .depth, method: .get, parameters: parameters, parser: MarketDepthParser(), completion: completion)
+        self.api(path: .depth, method: .get, parameters: parameters, parser: MarketDepthParser())
     }
 
-    private func broadcast(message: Message, sync: Bool = true) -> Single<[Transaction]> {
+    private func broadcast(message: Message, sync: Bool = true) -> Single<[ApiTransaction]> {
         do {
             let bytes = try message.encode()
             return self.broadcast(message: bytes, sync: sync)
@@ -151,7 +147,7 @@ class AcceleratedNodeApiProvider {
 
     }
 
-    private func broadcast(message bytes: Data, sync: Bool = true) -> Single<[Transaction]> {
+    private func broadcast(message bytes: Data, sync: Bool = true) -> Single<[ApiTransaction]> {
         var path = Path.broadcast.rawValue
         if (sync) {
             path += "/?sync=1"
@@ -160,7 +156,7 @@ class AcceleratedNodeApiProvider {
         return self.api(path: path, method: .post, body: bytes, parser: BroadcastParser()).map { $0.broadcast }
     }
 
-    private func klines(symbol: String, interval: Interval? = nil, limit: Limit? = nil, startTime: TimeInterval? = nil, endTime: TimeInterval? = nil, completion: Completion? = nil) {
+    private func klines(symbol: String, interval: Interval? = nil, limit: Limit? = nil, startTime: TimeInterval? = nil, endTime: TimeInterval? = nil) {
         var parameters: Parameters = [:]
         parameters["symbol"] = symbol
         if let interval = interval {
@@ -175,10 +171,11 @@ class AcceleratedNodeApiProvider {
         if let endTime = endTime {
             parameters["endTime"] = endTime
         }
-        self.api(path: .klines, method: .get, parameters: parameters, parser: CandlestickParser(), completion: completion)
+        self.api(path: .klines, method: .get, parameters: parameters, parser: CandlestickParser())
     }
 
-    private func closedOrders(address: String, endTime: TimeInterval? = nil, limit: Limit? = nil, offset: Int? = nil, side: Side? = nil, startTime: TimeInterval? = nil, status: Status? = nil, symbol: String? = nil, total: Total = .required, completion: Completion? = nil) {
+    private func closedOrders(address: String, endTime: TimeInterval? = nil, limit: Limit? = nil, offset: Int? = nil, side: Side? = nil, startTime: TimeInterval? = nil,
+                              status: Status? = nil, symbol: String? = nil, total: Total = .required) -> Single<OrderList> {
         var parameters: Parameters = [:]
         parameters["address"] = address
         parameters["total"] = total.rawValue
@@ -204,10 +201,10 @@ class AcceleratedNodeApiProvider {
             parameters["symbol"] = symbol
         }
         let path = String(format: "%@/?%@", Path.closedOrders.rawValue, parameters.query)
-        self.api(path: path, method: .get, parser: OrderListParser(), completion: completion)
+        return self.api(path: path, method: .get, parser: OrderListParser()).map { $0.orderList }
     }
 
-    private func openOrders(address: String, limit: Limit? = nil, offset: Int? = nil, symbol: String? = nil, total: Total = .required, completion: Completion? = nil) {
+    private func openOrders(address: String, limit: Limit? = nil, offset: Int? = nil, symbol: String? = nil, total: Total = .required) -> Single<OrderList> {
         var parameters: Parameters = [:]
         parameters["address"] = address
         parameters["total"] = total.rawValue
@@ -221,20 +218,20 @@ class AcceleratedNodeApiProvider {
             parameters["symbol"] = symbol
         }
         let path = String(format: "%@/?%@", Path.openOrders.rawValue, parameters.query)
-        self.api(path: path, method: .get, parser: OrderListParser(), completion: completion)
+        return self.api(path: path, method: .get, parser: OrderListParser()).map { $0.orderList }
     }
 
-    private func order(id: String, completion: Completion? = nil) {
+    private func order(id: String) -> Single<Order> {
         let path = String(format: "%@/%@", Path.orders.rawValue, id)
-        self.api(path: path, method: .get, parser: OrderParser(), completion: completion)
+        return self.api(path: path, method: .get, parser: OrderParser()).map { $0.order }
     }
 
-    private func ticker(symbol: String, completion: Completion? = nil) {
+    private func ticker(symbol: String) -> Single<[TickerStatistics]> {
         let path = String(format: "%@/?symbol=%@", Path.ticker.rawValue, symbol)
-        self.api(path: path, method: .get, parser: TickerStatisticsParser(), completion: completion)
+        return self.api(path: path, method: .get, parser: TickerStatisticsParser()).map { $0.ticker }
     }
 
-    private func trades(address: String? = nil, buyerOrderId: String? = nil, end: TimeInterval? = nil, height: Double? = nil, offset: Int? = nil, quoteAsset: String? = nil, sellerOrderId: String? = nil, side: Side? = nil, start: TimeInterval? = nil, symbol: String? = nil, total: Total? = nil, completion: Completion? = nil) {
+    private func trades(address: String? = nil, buyerOrderId: String? = nil, end: TimeInterval? = nil, height: Double? = nil, offset: Int? = nil, quoteAsset: String? = nil, sellerOrderId: String? = nil, side: Side? = nil, start: TimeInterval? = nil, symbol: String? = nil, total: Total? = nil) {
         var parameters: Parameters = [:]
         parameters["address"] = address
         if let end = end {
@@ -264,7 +261,7 @@ class AcceleratedNodeApiProvider {
         if let total = total {
             parameters["total"] = total.rawValue
         }
-        self.api(path: .trades, method: .get, parameters: parameters, parser: TradeParser(), completion: completion)
+        self.api(path: .trades, method: .get, parameters: parameters, parser: TradeParser())
     }
 
     private func transactions(address: String, blockHeight: Double? = nil, endTime: TimeInterval? = nil, limit: Limit? = nil, offset: Int? = nil, side: Side? = nil, startTime: TimeInterval? = nil, txAsset: String? = nil, txType: TxType? = nil) -> Single<Transactions> {
@@ -286,7 +283,7 @@ class AcceleratedNodeApiProvider {
             parameters["side"] = side.rawValue
         }
         if let startTime = startTime {
-            parameters["startTime"] = startTime
+            parameters["startTime"] = Int(startTime * 1000)
         }
         if let txAsset = txAsset {
             parameters["txAsset"] = txAsset
@@ -300,20 +297,25 @@ class AcceleratedNodeApiProvider {
     // MARK: - Utils
 
     @discardableResult
-    func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser(), completion: Completion? = nil) -> Single<AcceleratedNodeApiProvider.Response> {
-        return self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser, completion: completion)
+    func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<AcceleratedNodeApiProvider.Response> {
+        return self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser)
     }
 
-    func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser(), completion: Completion? = nil) -> Single<AcceleratedNodeApiProvider.Response> {
+    func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<AcceleratedNodeApiProvider.Response> {
         var encoding: ParameterEncoding = URLEncoding.default
         if let body = body {
             encoding = HexEncoding(data: body)
         }
         let url = String(format: "%@/api/v1/%@", self.endpoint, path)
+        print("")
+        print("url: \(url)")
+        print("method: \(method)")
+        print("parameters: \(parameters)")
+        print("body: \(encoding)")
 
         let single = Single<AcceleratedNodeApiProvider.Response>.create { observer in
             let request = Alamofire.request(url, method: method, parameters: parameters, encoding: encoding)
-            request.validate(statusCode: 200..<300)
+            request.validate(statusCode: 200..<499)
             request.responseData(queue: DispatchQueue.global(qos: .background)) { (http) -> Void in
                 let response = AcceleratedNodeApiProvider.Response()
 
@@ -356,11 +358,11 @@ extension AcceleratedNodeApiProvider: IApiProvider {
         return nodeInfo()
     }
 
-    func transactionsSingle(symbol: String) -> Single<[Tx]> {
-        return transactions(address: address, txAsset: symbol).map { $0.tx }
+    func transactionsSingle(account: String, offset: Int, startTime: TimeInterval) -> Single<[Tx]> {
+        return transactions(address: account, offset: offset, startTime: startTime, txType: .transfer).map { $0.tx }
     }
 
-    func accountSingle() -> Single<Account> {
+    func balancesSingle(for address: String) -> Single<Account> {
         return account(address: address)
     }
 

@@ -1,6 +1,9 @@
 PODS:
   - Alamofire (4.8.2)
   - Cuckoo (1.0.6)
+  - GRDB.swift (4.1.1):
+    - GRDB.swift/standard (= 4.1.1)
+  - GRDB.swift/standard (4.1.1)
   - HSCryptoKit (1.4.2)
   - HSHDWalletKit (1.1):
     - HSCryptoKit (~> 1.4)
@@ -13,6 +16,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire (~> 4.0)
   - Cuckoo
+  - GRDB.swift (~> 4.0)
   - HSCryptoKit (~> 1.4)
   - HSHDWalletKit (~> 1.1)
   - Nimble
@@ -25,6 +29,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
     - Cuckoo
+    - GRDB.swift
     - HSCryptoKit
     - HSHDWalletKit
     - Nimble
@@ -36,6 +41,7 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Cuckoo: 8074fc309159c4862665b83798f5ad03e061e8bd
+  GRDB.swift: 99b10e1afa666ff024d76e38b37fefd34b57def4
   HSCryptoKit: 4dcb2506b5d8d85c4a31ab57734df3d1f7ea17f9
   HSHDWalletKit: 1d946bd24bd307cc494141f4e518d25db814f050
   Nimble: 622629381bda1dd5678162f21f1368cec7cbba60
@@ -44,6 +50,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: e905ca1366405696411aaf174411c4b19c0ef73d
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: 2911dcce89ea8fa466158a889318ee57230f216d
+PODFILE CHECKSUM: 39335272bceece2a65d20c8da4624e70056551a6
 
 COCOAPODS: 1.7.5

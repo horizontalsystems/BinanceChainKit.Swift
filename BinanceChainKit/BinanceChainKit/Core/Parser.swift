@@ -132,8 +132,8 @@ class Parser {
         return Data(bytes: &key, count: key.count * MemoryLayout<UInt8>.size)
     }
 
-    func parseTransaction(_ json: JSON) throws -> Transaction {
-        let transaction = Transaction()
+    func parseTransaction(_ json: JSON) throws -> ApiTransaction {
+        let transaction = ApiTransaction()
         transaction.hash = json["hash"].stringValue
         transaction.log = json["log"].stringValue
         transaction.ok = json["ok"].boolValue
@@ -166,6 +166,7 @@ class Parser {
         guard let txType = TxType(rawValue: json["txType"].stringValue) else { throw ParseError(model: "Tx", property: "txType") }
         tx.txType = txType
         tx.value = json["value"].stringValue
+        tx.memo = json["memo"].stringValue
         return tx
     }
 
@@ -204,8 +205,8 @@ class Parser {
         return account
     }
 
-    func parseBalance(_ json: JSON) -> Balance {
-        let balance = Balance()
+    func parseBalance(_ json: JSON) -> ApiBalance {
+        let balance = ApiBalance()
         balance.symbol = json["symbol"].string ?? json["a"].stringValue
         balance.free = json["free"].doubleString ?? json["f"].doubleValue
         balance.locked = json["locked"].doubleString ?? json["l"].doubleValue
