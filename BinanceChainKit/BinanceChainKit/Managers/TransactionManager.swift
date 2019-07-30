@@ -6,14 +6,16 @@ class TransactionManager {
     private let storage: IStorage
     private let wallet: Wallet
     private let apiProvider: IApiProvider
+    private let accountSyncer: AccountSyncer
     private let logger: Logger
 
     private let disposeBag = DisposeBag()
 
-    init(storage: IStorage, wallet: Wallet, apiProvider: IApiProvider, logger: Logger) {
+    init(storage: IStorage, wallet: Wallet, apiProvider: IApiProvider, accountSyncer: AccountSyncer, logger: Logger) {
         self.storage = storage
         self.wallet = wallet
         self.apiProvider = apiProvider
+        self.accountSyncer = accountSyncer
         self.logger = logger
     }
 
@@ -50,7 +52,13 @@ class TransactionManager {
 //        sync(account: account)
     }
 
-    func sendSingle(account: String, symbol: String, to: String, amount: Decimal, memo: String) -> Single<String?> {
-        return Single.just(nil)
+    func sendSingle(account: String, symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
+        return accountSyncer.sync(wallet: wallet).flatMap {
+            return self.apiProvider
+                    .sendSingle(symbol: symbol, to: to, amount: Double(truncating: amount as NSNumber), memo: memo, wallet: self.wallet)
+                    .map { tx in
+                return tx.txHash
+            }
+        }
     }
 }

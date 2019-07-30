@@ -9,7 +9,7 @@ project 'BinanceChainKitDemo/BinanceChainKitDemo'
 project 'BinanceChainKit/BinanceChainKit'
 
 def kit_pods
-  pod 'HSCryptoKit', '~> 1.4'
+  pod 'HSCryptoKit', '~> 1.5'
   pod 'HSHDWalletKit', '~> 1.1'
 
   pod 'RxSwift'
@@ -30,9 +30,9 @@ target :BinanceChainKitDemo do
 end
 
 def test_pods
-  pod 'Quick'
-  pod 'Nimble'
-  pod 'Cuckoo'
+  # pod 'Quick'
+  # pod 'Nimble'
+  # pod 'Cuckoo'
 end
 
 target :BinanceChainKitTests do

@@ -95,10 +95,12 @@ extension BinanceChainKit {
         }
     }
 
-    public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String?> {
+    public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
+        logger.verbose("Sending \(amount) \(symbol) to \(to)")
+
         return transactionManager.sendSingle(account: account, symbol: symbol, to: to, amount: amount, memo: memo)
-                .do(onSuccess: { [weak self] _ in
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                .do(onSuccess: { [weak self] hash in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         self?.refresh()
                     }
                 })
@@ -149,8 +151,9 @@ extension BinanceChainKit {
 
         let apiProvider = AcceleratedNodeApiProvider(endpoint: networkType.endpoint)
 
-        let balanceManager = BalanceManager(storage: storage, apiProvider: apiProvider, logger: logger)
-        let transactionManager = TransactionManager(storage: storage, wallet: wallet, apiProvider: apiProvider, logger: logger)
+        let accountSyncer = AccountSyncer(apiProvider: apiProvider, logger: logger)
+        let balanceManager = BalanceManager(storage: storage, accountSyncer: accountSyncer, logger: logger)
+        let transactionManager = TransactionManager(storage: storage, wallet: wallet, apiProvider: apiProvider, accountSyncer: accountSyncer, logger: logger)
         let reachabilityManager = ReachabilityManager()
 
         let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, logger: logger)

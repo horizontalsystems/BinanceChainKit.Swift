@@ -3,8 +3,8 @@ import RxSwift
 protocol IApiProvider {
     func nodeInfoSingle() -> Single<NodeInfo>
     func transactionsSingle(account: String, offset: Int, startTime: TimeInterval) -> Single<[Tx]>
-    func balancesSingle(for: String) -> Single<Account>
-    func sendSingle(symbol: String, to: String, amount: Double, wallet: Wallet) -> Single<Tx>
+    func accountSingle(for: String) -> Single<Account>
+    func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<Tx>
 }
 
 protocol IStorage {

@@ -4,15 +4,15 @@ class BalanceManager {
     weak var delegate: IBalanceManagerDelegate?
 
     private let storage: IStorage
-    private let apiProvider: IApiProvider
+    private let accountSyncer: AccountSyncer
     private let logger: Logger?
 
     private let disposeBag = DisposeBag()
 
 
-    init(storage: IStorage, apiProvider: IApiProvider, logger: Logger? = nil) {
+    init(storage: IStorage, accountSyncer: AccountSyncer, logger: Logger? = nil) {
         self.storage = storage
-        self.apiProvider = apiProvider
+        self.accountSyncer = accountSyncer
         self.logger = logger
     }
 
@@ -25,10 +25,7 @@ class BalanceManager {
     }
 
     func sync(account: String) {
-        Single.zip(
-                        apiProvider.nodeInfoSingle(),
-                        apiProvider.balancesSingle(for: account)
-                )
+        accountSyncer.sync(account: account)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
                 .subscribe(onSuccess: { [weak self] nodeInfo, account in
                     self?.handle(nodeInfo: nodeInfo, account: account)

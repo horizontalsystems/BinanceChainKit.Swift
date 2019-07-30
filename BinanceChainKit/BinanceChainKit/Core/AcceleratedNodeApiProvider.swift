@@ -362,12 +362,12 @@ extension AcceleratedNodeApiProvider: IApiProvider {
         return transactions(address: account, offset: offset, startTime: startTime, txType: .transfer).map { $0.tx }
     }
 
-    func balancesSingle(for address: String) -> Single<Account> {
+    func accountSingle(for address: String) -> Single<Account> {
         return account(address: address)
     }
 
-    func sendSingle(symbol: String, to: String, amount: Double, wallet: Wallet) -> Single<Tx> {
-        let message = Message.transfer(symbol: symbol, amount: amount, to: to, wallet: wallet)
+    func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<Tx> {
+        let message = Message.transfer(symbol: symbol, amount: amount, to: to, memo: memo, wallet: wallet)
 
         return broadcast(message: message, sync: true).map { transactions in
             guard let transaction = transactions.first else {

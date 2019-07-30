@@ -45,7 +45,7 @@ public class Wallet {
 
     public func sign(message: Data) throws -> Data {
         let hash = CryptoKit.sha256(message)
-        return try CryptoKit.compactsign(hash, privateKey: self.privateKey)
+        return try CryptoKit.compactSign(hash, privateKey: self.privateKey)
     }
 
 }

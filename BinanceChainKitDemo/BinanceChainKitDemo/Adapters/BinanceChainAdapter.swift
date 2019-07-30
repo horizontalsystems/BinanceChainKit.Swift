@@ -82,7 +82,7 @@ extension BinanceChainAdapter {
 
     }
 
-    func sendSingle(to: String, amount: Decimal, memo: String) -> Single<String?> {
+    func sendSingle(to: String, amount: Decimal, memo: String) -> Single<String> {
         return binanceChainKit.sendSingle(symbol: asset.symbol, to: to, amount: amount, memo: memo)
     }
 
