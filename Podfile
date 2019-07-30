@@ -12,10 +12,10 @@ def kit_pods
   pod 'HSCryptoKit', '~> 1.5'
   pod 'HSHDWalletKit', '~> 1.1'
 
-  pod 'RxSwift'
+  pod 'RxSwift', '~> 5.0'
   pod 'GRDB.swift', '~> 4.0'
   pod 'Alamofire', '~> 4.0'
-  pod 'SwiftProtobuf', :inhibit_warnings => true
+  pod 'SwiftProtobuf', '~> 1.6'
   pod 'SwiftyJSON', '~> 4.3'
 end
 
