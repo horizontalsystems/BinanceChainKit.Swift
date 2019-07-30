@@ -31,8 +31,8 @@ class Storage {
                 t.column(Transaction.Columns.date.name, .date).notNull()
                 t.column(Transaction.Columns.from.name, .text).notNull()
                 t.column(Transaction.Columns.to.name, .text).notNull()
-                t.column(Transaction.Columns.amount.name, .double).notNull()
-                t.column(Transaction.Columns.fee.name, .double).notNull()
+                t.column(Transaction.Columns.amount.name, .integer).notNull()
+                t.column(Transaction.Columns.fee.name, .integer).notNull()
                 t.column(Transaction.Columns.symbol.name, .text).notNull()
                 t.column(Transaction.Columns.memo.name, .text)
 

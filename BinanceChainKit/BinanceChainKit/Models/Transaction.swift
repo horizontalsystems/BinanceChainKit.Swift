@@ -1,6 +1,8 @@
 import GRDB
 
 public class Transaction: Record {
+    static let decimal = 8 // 8-digit decimals
+
     public let hash: String
     public let blockNumber: Int
     public let date: Date
@@ -24,8 +26,8 @@ public class Transaction: Record {
         from = tx.fromAddr
         to = tx.toAddr
         amount = txValue
-        symbol = tx.txAsset
         fee = txFee
+        symbol = tx.txAsset
         memo = tx.memo
         
         super.init()
@@ -53,9 +55,9 @@ public class Transaction: Record {
         date = row[Columns.date]
         from = row[Columns.from]
         to = row[Columns.to]
-        amount = row[Columns.amount]
+        amount = Transaction.decimalValue(of: row[Columns.amount])
+        fee = Transaction.decimalValue(of: row[Columns.fee])
         symbol = row[Columns.symbol]
-        fee = row[Columns.fee]
         memo = row[Columns.memo]
 
         super.init(row: row)
@@ -67,10 +69,18 @@ public class Transaction: Record {
         container[Columns.date] = date
         container[Columns.from] = from
         container[Columns.to] = to
-        container[Columns.amount] = amount
+        container[Columns.amount] = Transaction.int64Value(of: amount)
+        container[Columns.fee] = Transaction.int64Value(of: fee)
         container[Columns.symbol] = symbol
-        container[Columns.fee] = fee
         container[Columns.memo] = memo
+    }
+
+    private static func decimalValue(of int64: Int64) -> Decimal {
+        return Decimal(sign: .plus, exponent: -decimal, significand: Decimal(int64))
+    }
+
+    private static func int64Value(of decimalValue: Decimal) -> Int64 {
+        return Int64(truncating: Decimal(sign: .plus, exponent: decimal, significand: decimalValue) as NSNumber)
     }
 
 }
