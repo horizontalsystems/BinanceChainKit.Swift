@@ -4,7 +4,7 @@ import RxSwift
 class BalanceController: UITableViewController {
     private let disposeBag = DisposeBag()
 
-    private let adapters = Manager.shared.eosAdapters
+    private let adapters = Manager.shared.binanceAdapters
 
     override func viewDidLoad() {
         super.viewDidLoad()

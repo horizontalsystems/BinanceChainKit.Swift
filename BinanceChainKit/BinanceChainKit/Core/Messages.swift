@@ -1,7 +1,7 @@
 import Foundation
 import SwiftProtobuf
 
-public class Message {
+class Message {
 
     private enum MessageType: String {
         case newOrder = "CE6DC043"
@@ -44,7 +44,7 @@ public class Message {
         self.wallet = wallet
     }
 
-    public static func newOrder(symbol: String, orderType: OrderType, side: Side, price: Double, quantity: Double, timeInForce: TimeInForce, wallet: Wallet) -> Message {
+    static func newOrder(symbol: String, orderType: OrderType, side: Side, price: Double, quantity: Double, timeInForce: TimeInForce, wallet: Wallet) -> Message {
         let message = Message(type: .newOrder, wallet: wallet)
         message.symbol = symbol
         message.orderType = orderType
@@ -56,28 +56,28 @@ public class Message {
         return message
     }
 
-    public static func cancelOrder(symbol: String, orderId: String, wallet: Wallet) -> Message {
+    static func cancelOrder(symbol: String, orderId: String, wallet: Wallet) -> Message {
         let message = Message(type: .cancelOrder, wallet: wallet)
         message.symbol = symbol
         message.orderId = orderId
         return message
     }
 
-    public static func freeze(symbol: String, amount: Double, wallet: Wallet) -> Message  {
+    static func freeze(symbol: String, amount: Double, wallet: Wallet) -> Message  {
         let message = Message(type: .freeze, wallet: wallet)
         message.symbol = symbol
         message.amount = amount
         return message
     }
 
-    public static func unfreeze(symbol: String, amount: Double, wallet: Wallet) -> Message  {
+    static func unfreeze(symbol: String, amount: Double, wallet: Wallet) -> Message  {
         let message = Message(type: .unfreeze, wallet: wallet)
         message.symbol = symbol
         message.amount = amount
         return message
     }
 
-    public static func transfer(symbol: String, amount: Double, to address: String, memo: String = "", wallet: Wallet) -> Message {
+    static func transfer(symbol: String, amount: Double, to address: String, memo: String = "", wallet: Wallet) -> Message {
         let message = Message(type: .transfer, wallet: wallet)
         message.symbol = symbol
         message.amount = amount
@@ -86,7 +86,7 @@ public class Message {
         return message
     }
 
-    public static func vote(proposalId: Int, vote option: VoteOption, wallet: Wallet) -> Message {
+    static func vote(proposalId: Int, vote option: VoteOption, wallet: Wallet) -> Message {
         let message = Message(type: .vote, wallet: wallet)
         message.proposalId = proposalId
         message.voteOption = option
@@ -95,7 +95,7 @@ public class Message {
 
     // MARK: - Public
 
-    public func encode() throws -> Data {
+    func encode() throws -> Data {
 
         // Generate encoded message
         var message = Data()

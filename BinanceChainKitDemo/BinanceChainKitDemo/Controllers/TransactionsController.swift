@@ -5,7 +5,7 @@ import BinanceChainKit
 class TransactionsController: UITableViewController {
     private let disposeBag = DisposeBag()
 
-    private let adapters = Manager.shared.eosAdapters
+    private let adapters = Manager.shared.binanceAdapters
     private var transactions = [TransactionRecord]()
 
     private let segmentedControl = UISegmentedControl()

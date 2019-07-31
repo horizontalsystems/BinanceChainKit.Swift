@@ -9,7 +9,7 @@ class SendController: UIViewController {
     @IBOutlet weak var memoTextField: UITextField?
     @IBOutlet weak var coinLabel: UILabel?
 
-    private let adapters = Manager.shared.eosAdapters
+    private let adapters = Manager.shared.binanceAdapters
     private let segmentedControl = UISegmentedControl()
 
     override func viewDidLoad() {

@@ -8,7 +8,7 @@ class Manager {
 
     var binanceChainKit: BinanceChainKit!
 
-    var eosAdapters = [BinanceChainAdapter]()
+    var binanceAdapters = [BinanceChainAdapter]()
 
     init() {
         if let words = savedWords {
@@ -26,7 +26,7 @@ class Manager {
         clearAuth()
 
         binanceChainKit = nil
-        eosAdapters = []
+        binanceAdapters = []
     }
 
     private func initBinanceChainKit(words: [String]) throws {
@@ -40,7 +40,7 @@ class Manager {
 
         binanceChainKit.refresh()
 
-        eosAdapters = [
+        binanceAdapters = [
             BinanceChainAdapter(binanceChainKit: binanceChainKit, symbol: "BNB"),
             BinanceChainAdapter(binanceChainKit: binanceChainKit, symbol: "ZCB-F00"),
         ]

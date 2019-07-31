@@ -1,255 +1,255 @@
 import Foundation
 
-public class Times: CustomStringConvertible {
-    public var apTime: Date = Date()
-    public var blockTime: Date = Date()
+class Times: CustomStringConvertible {
+    var apTime: Date = Date()
+    var blockTime: Date = Date()
 }
 
-public class Validators: CustomStringConvertible {
-    public var blockHeight: Int = 0
-    public var validators: [Validator] = []
+class Validators: CustomStringConvertible {
+    var blockHeight: Int = 0
+    var validators: [Validator] = []
 }
 
-public class Validator: CustomStringConvertible {
-    public var address: String = ""
-    public var publicKey: Data = Data()
-    public var votingPower: Int = 0
+class Validator: CustomStringConvertible {
+    var address: String = ""
+    var publicKey: Data = Data()
+    var votingPower: Int = 0
 }
 
-public class Peer: CustomStringConvertible {
-    public var id: String = ""
-    public var originalListenAddr: String = ""
-    public var listenAddr: String = ""
-    public var accessAddr: String = ""
-    public var streamAddr: String = ""
-    public var network: String = ""
-    public var version: String = ""
-    public var moniker: String = ""
-    public var capabilities: [String] = []
-    public var accelerated: Bool = false
+class Peer: CustomStringConvertible {
+    var id: String = ""
+    var originalListenAddr: String = ""
+    var listenAddr: String = ""
+    var accessAddr: String = ""
+    var streamAddr: String = ""
+    var network: String = ""
+    var version: String = ""
+    var moniker: String = ""
+    var capabilities: [String] = []
+    var accelerated: Bool = false
 }
 
-public class NodeInfo: CustomStringConvertible {
-    public var id: String = ""
-    public var listenAddr: String = ""
-    public var network: String = ""
-    public var version: String = ""
-    public var moniker: String = ""
-    public var address: String = ""
-    public var channels: String = ""
-    public var other: [String:String] = [:]
-    public var syncInfo: [String:Any] = [:]
-    public var validatorInfo: Validator = Validator()
+class NodeInfo: CustomStringConvertible {
+    var id: String = ""
+    var listenAddr: String = ""
+    var network: String = ""
+    var version: String = ""
+    var moniker: String = ""
+    var address: String = ""
+    var channels: String = ""
+    var other: [String:String] = [:]
+    var syncInfo: [String:Any] = [:]
+    var validatorInfo: Validator = Validator()
 }
 
-public class Transactions: CustomStringConvertible {
-    public var total: Int = 0
-    public var tx: [Tx] = []
+class Transactions: CustomStringConvertible {
+    var total: Int = 0
+    var tx: [Tx] = []
 }
 
-public class ApiTransaction: CustomStringConvertible {
-    public var hash: String = ""
-    public var log: String = ""
-    public var data: String = ""
-    public var ok: Bool = false
-    public var tx: Tx = Tx()
+class ApiTransaction: CustomStringConvertible {
+    var hash: String = ""
+    var log: String = ""
+    var data: String = ""
+    var ok: Bool = false
+    var tx: Tx = Tx()
 }
 
-public class Account: CustomStringConvertible {
-    public var accountNumber: Int = 0
-    public var address: String = ""
-    public var balances: [ApiBalance] = []
-    public var publicKey: Data = Data()
-    public var sequence: Int = 0
+class Account: CustomStringConvertible {
+    var accountNumber: Int = 0
+    var address: String = ""
+    var balances: [ApiBalance] = []
+    var publicKey: Data = Data()
+    var sequence: Int = 0
 }
 
-public class AccountSequence: CustomStringConvertible {
-    public var sequence: Int = 0
+class AccountSequence: CustomStringConvertible {
+    var sequence: Int = 0
 }
 
-public class ApiBalance: CustomStringConvertible {
-    public var symbol: String = ""
-    public var free: Double = 0
-    public var locked: Double = 0
-    public var frozen: Double = 0
+class ApiBalance: CustomStringConvertible {
+    var symbol: String = ""
+    var free: Double = 0
+    var locked: Double = 0
+    var frozen: Double = 0
 }
 
-public class Token: CustomStringConvertible {
-    public var name: String = ""
-    public var symbol: String = ""
-    public var originalSymbol: String = ""
-    public var totalSupply: Double = 0
-    public var owner: String = ""
+class Token: CustomStringConvertible {
+    var name: String = ""
+    var symbol: String = ""
+    var originalSymbol: String = ""
+    var totalSupply: Double = 0
+    var owner: String = ""
 }
 
-public class Market: CustomStringConvertible {
-    public var baseAssetSymbol: String = ""
-    public var quoteAssetSymbol: String = ""
-    public var price: Double = 0
-    public var tickSize: Double = 0
-    public var lotSize: Double = 0
+class Market: CustomStringConvertible {
+    var baseAssetSymbol: String = ""
+    var quoteAssetSymbol: String = ""
+    var price: Double = 0
+    var tickSize: Double = 0
+    var lotSize: Double = 0
 }
 
-public class Fee: CustomStringConvertible {
-    public var msgType: String = ""
-    public var fee: String = ""
-    public var feeFor: FeeFor = .all
-    public var multiTransferFee: Int = 0
-    public var lowerLimitAsMulti: Int = 0
-    public var fixedFeeParams: FixedFeeParams?
+class Fee: CustomStringConvertible {
+    var msgType: String = ""
+    var fee: String = ""
+    var feeFor: FeeFor = .all
+    var multiTransferFee: Int = 0
+    var lowerLimitAsMulti: Int = 0
+    var fixedFeeParams: FixedFeeParams?
 }
 
-public class FixedFeeParams: CustomStringConvertible {
-    public var msgType: String = ""
-    public var fee: String = ""
-    public var feeFor: FeeFor = .all
+class FixedFeeParams: CustomStringConvertible {
+    var msgType: String = ""
+    var fee: String = ""
+    var feeFor: FeeFor = .all
 }
 
-public class PriceQuantity: CustomStringConvertible {
-    public var price: Double = 0
-    public var quantity: Double = 0
+class PriceQuantity: CustomStringConvertible {
+    var price: Double = 0
+    var quantity: Double = 0
 }
 
-public class MarketDepth: CustomStringConvertible {
-    public var asks: [PriceQuantity] = []
-    public var bids: [PriceQuantity] = []
+class MarketDepth: CustomStringConvertible {
+    var asks: [PriceQuantity] = []
+    var bids: [PriceQuantity] = []
 }
 
-public class MarketDepthUpdate: CustomStringConvertible {
-    public var symbol: String = ""
-    public var depth: MarketDepth = MarketDepth()
+class MarketDepthUpdate: CustomStringConvertible {
+    var symbol: String = ""
+    var depth: MarketDepth = MarketDepth()
 }
 
-public class BlockTradePage: CustomStringConvertible {
-    public var total: Int = 0
-    public var blockTrade: [BlockTrade] = []
+class BlockTradePage: CustomStringConvertible {
+    var total: Int = 0
+    var blockTrade: [BlockTrade] = []
 }
 
-public class BlockTrade: CustomStringConvertible {
-    public var blockTime: TimeInterval = 0
-    public var fee: Int = 0
-    public var height: Int = 0
-    public var trade: [Trade] = []
+class BlockTrade: CustomStringConvertible {
+    var blockTime: TimeInterval = 0
+    var fee: Int = 0
+    var height: Int = 0
+    var trade: [Trade] = []
 }
 
-public class Candlestick: CustomStringConvertible {
-    public var close: Double = 0
-    public var closeTime: Date = Date()
-    public var high: Double = 0
-    public var low: Double = 0
-    public var numberOfTrades: Int = 0
-    public var open: Double = 0
-    public var openTime: Date = Date()
-    public var quoteAssetVolume: Double = 0
-    public var volume: Double = 0
-    public var closed: Bool = false
+class Candlestick: CustomStringConvertible {
+    var close: Double = 0
+    var closeTime: Date = Date()
+    var high: Double = 0
+    var low: Double = 0
+    var numberOfTrades: Int = 0
+    var open: Double = 0
+    var openTime: Date = Date()
+    var quoteAssetVolume: Double = 0
+    var volume: Double = 0
+    var closed: Bool = false
 }
 
-public class OrderList: CustomStringConvertible {
-    public var total: Int = 0
-    public var orders: [Order] = []
+class OrderList: CustomStringConvertible {
+    var total: Int = 0
+    var orders: [Order] = []
 }
 
-public class Order: CustomStringConvertible {
-    public var cumulateQuantity: String = ""
-    public var fee: String = ""
-    public var lastExecutedPrice: String = ""
-    public var lastExecuteQuantity: String = ""
-    public var orderCreateTime: Date = Date()
-    public var orderId: String = ""
-    public var owner: String = ""
-    public var price: Double = 0
-    public var side: Side = .buy
-    public var status: Status = .acknowledge
-    public var symbol: String = ""
-    public var timeInForce: TimeInForce = .immediateOrCancel
-    public var tradeId: String = ""
-    public var transactionHash: String = ""
-    public var transactionTime: Date = Date()
-    public var type: OrderType = .limit
+class Order: CustomStringConvertible {
+    var cumulateQuantity: String = ""
+    var fee: String = ""
+    var lastExecutedPrice: String = ""
+    var lastExecuteQuantity: String = ""
+    var orderCreateTime: Date = Date()
+    var orderId: String = ""
+    var owner: String = ""
+    var price: Double = 0
+    var side: Side = .buy
+    var status: Status = .acknowledge
+    var symbol: String = ""
+    var timeInForce: TimeInForce = .immediateOrCancel
+    var tradeId: String = ""
+    var transactionHash: String = ""
+    var transactionTime: Date = Date()
+    var type: OrderType = .limit
 }
 
-public class TickerStatistics: CustomStringConvertible {
-    public var askPrice: Double = 0
-    public var askQuantity: Double = 0
-    public var bidPrice: Double = 0
-    public var bidQuantity: Double = 0
-    public var closeTime: Date = Date()
-    public var count: Int = 0
-    public var firstId: String = ""
-    public var highPrice: Double = 0
-    public var lastId: String = ""
-    public var lastPrice: Double = 0
-    public var lastQuantity: Double = 0
-    public var lowPrice: Double = 0
-    public var openPrice: Double = 0
-    public var openTime: Date = Date()
-    public var prevClosePrice: Double = 0
-    public var priceChange: Double = 0
-    public var priceChangePercent: Double = 0
-    public var quoteVolume: Double = 0
-    public var symbol: String = ""
-    public var volume: Double = 0
-    public var weightedAvgPrice: Double = 0
+class TickerStatistics: CustomStringConvertible {
+    var askPrice: Double = 0
+    var askQuantity: Double = 0
+    var bidPrice: Double = 0
+    var bidQuantity: Double = 0
+    var closeTime: Date = Date()
+    var count: Int = 0
+    var firstId: String = ""
+    var highPrice: Double = 0
+    var lastId: String = ""
+    var lastPrice: Double = 0
+    var lastQuantity: Double = 0
+    var lowPrice: Double = 0
+    var openPrice: Double = 0
+    var openTime: Date = Date()
+    var prevClosePrice: Double = 0
+    var priceChange: Double = 0
+    var priceChangePercent: Double = 0
+    var quoteVolume: Double = 0
+    var symbol: String = ""
+    var volume: Double = 0
+    var weightedAvgPrice: Double = 0
 }
 
-public class TradePage: CustomStringConvertible {
-    public var total: Int = 0
-    public var trade: [Trade] = []
+class TradePage: CustomStringConvertible {
+    var total: Int = 0
+    var trade: [Trade] = []
 }
 
-public class Trade: CustomStringConvertible {
-    public var baseAsset: String = ""
-    public var blockHeight: Int = 0
-    public var buyFee: String = ""
-    public var buyerId: String = ""
-    public var buyerOrderId: String = ""
-    public var price: String = ""
-    public var quantity: String = ""
-    public var quoteAsset: String = ""
-    public var sellFee: String = ""
-    public var sellerId: String = ""
-    public var symbol: String = ""
-    public var time: Date = Date()
-    public var tradeId: String = ""
+class Trade: CustomStringConvertible {
+    var baseAsset: String = ""
+    var blockHeight: Int = 0
+    var buyFee: String = ""
+    var buyerId: String = ""
+    var buyerOrderId: String = ""
+    var price: String = ""
+    var quantity: String = ""
+    var quoteAsset: String = ""
+    var sellFee: String = ""
+    var sellerId: String = ""
+    var symbol: String = ""
+    var time: Date = Date()
+    var tradeId: String = ""
 }
 
-public class TxPage: CustomStringConvertible {
-    public var total: Int = 0
-    public var tx: [Tx] = []
+class TxPage: CustomStringConvertible {
+    var total: Int = 0
+    var tx: [Tx] = []
 }
 
-public class Tx: CustomStringConvertible {
-    public var blockHeight: Double = 0
-    public var code: Int = 0
-    public var confirmBlocks: Double = 0
-    public var data: String = ""
-    public var fromAddr: String = ""
-    public var orderId: String = ""
-    public var timestamp: Date = Date()
-    public var toAddr: String = ""
-    public var txAge: Double = 0
-    public var txAsset: String = ""
-    public var txFee: String = ""
-    public var txHash: String = ""
-    public var txType: TxType = .newOrder
-    public var value: String = ""
-    public var memo: String = ""
+class Tx: CustomStringConvertible {
+    var blockHeight: Double = 0
+    var code: Int = 0
+    var confirmBlocks: Double = 0
+    var data: String = ""
+    var fromAddr: String = ""
+    var orderId: String = ""
+    var timestamp: Date = Date()
+    var toAddr: String = ""
+    var txAge: Double = 0
+    var txAsset: String = ""
+    var txFee: String = ""
+    var txHash: String = ""
+    var txType: TxType = .newOrder
+    var value: String = ""
+    var memo: String = ""
 }
 
-public class Transfer: CustomStringConvertible {
-    public var height: Int = 0
-    public var transactionHash: String = ""
-    public var fromAddr: String = ""
-    public var transferred: [Transferred] = []
+class Transfer: CustomStringConvertible {
+    var height: Int = 0
+    var transactionHash: String = ""
+    var fromAddr: String = ""
+    var transferred: [Transferred] = []
 }
 
-public class Transferred: CustomStringConvertible {
-    public var toAddr: String = ""
-    public var amounts: [Amount] = []
+class Transferred: CustomStringConvertible {
+    var toAddr: String = ""
+    var amounts: [Amount] = []
 }
 
-public class Amount: CustomStringConvertible {
-    public var asset: String = ""
-    public var amount: Double = 0
+class Amount: CustomStringConvertible {
+    var asset: String = ""
+    var amount: Double = 0
 }

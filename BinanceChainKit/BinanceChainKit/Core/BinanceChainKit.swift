@@ -7,7 +7,7 @@ public class BinanceChainKit {
     private let balanceManager: BalanceManager
     private let transactionManager: TransactionManager
     private let reachabilityManager: ReachabilityManager
-
+    private let segWitHelper: SegWitBech32
     private let logger: Logger?
 
     public let account: String
@@ -23,11 +23,12 @@ public class BinanceChainKit {
         }
     }
 
-    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, logger: Logger? = nil) {
+    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, logger: Logger? = nil) {
         self.account = account
         self.balanceManager = balanceManager
         self.transactionManager = transactionManager
         self.reachabilityManager = reachabilityManager
+        self.segWitHelper = segWitHelper
         self.logger = logger
 
         latestBlockHeight = balanceManager.latestBlock?.height
@@ -89,6 +90,10 @@ extension BinanceChainKit {
         return syncStateSubject.asObservable()
     }
 
+    public func validate(address: String) throws {
+        try _ = segWitHelper.decode(addr: address)
+    }
+
     public func transactionsSingle(symbol: String, fromTransactionHash: String? = nil, limit: Int? = nil) -> Single<[TransactionInfo]> {
         return transactionManager.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit).map {
             $0.map { transaction in TransactionInfo(transaction: transaction) }
@@ -147,7 +152,8 @@ extension BinanceChainKit {
         let storage: IStorage = try Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "binance-chain-\(uniqueId)")
 
         let hdWallet = HDWallet(seed: Mnemonic.seed(mnemonic: words), coinType: 714, xPrivKey: 0, xPubKey: 0)
-        let wallet = try Wallet(hdWallet: hdWallet, networkType: networkType)
+        let segWitHelper = SegWitBech32(hrp: networkType.addressPrefix)
+        let wallet = try Wallet(hdWallet: hdWallet, segWitHelper: segWitHelper)
 
         let apiProvider = BinanceChainApiProvider(endpoint: networkType.endpoint, logger: logger)
 
@@ -156,7 +162,7 @@ extension BinanceChainKit {
         let transactionManager = TransactionManager(storage: storage, wallet: wallet, apiProvider: apiProvider, accountSyncer: accountSyncer, logger: logger)
         let reachabilityManager = ReachabilityManager()
 
-        let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, logger: logger)
+        let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, segWitHelper: segWitHelper, logger: logger)
         balanceManager.delegate = binanceChainKit
         transactionManager.delegate = binanceChainKit
 

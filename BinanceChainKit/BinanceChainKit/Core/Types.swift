@@ -1,6 +1,6 @@
 import Foundation
 
-public enum Interval: String {
+enum Interval: String {
     case oneMinute = "1m"
     case threeMinutes = "3m"
     case fiveMinutes = "5m"
@@ -18,7 +18,7 @@ public enum Interval: String {
     case oneMonth = "1M"
 }
 
-public enum Limit: Int {
+enum Limit: Int {
     case five = 5
     case ten = 10
     case twenty = 20
@@ -28,13 +28,13 @@ public enum Limit: Int {
     case oneThousand = 1000
 }
 
-public enum Side: Int {
+enum Side: Int {
     case unknown = 0
     case buy = 1
     case sell = 2
 }
 
-public enum Status: String {
+enum Status: String {
     case unknown = ""
     case acknowledge = "Ack"
     case partialFill = "PartialFill"
@@ -46,12 +46,12 @@ public enum Status: String {
     case failedMatching = "FailedMatching"
 }
 
-public enum Total: Int {
+enum Total: Int {
     case notRequired = 0
     case required = 1
 }
 
-public enum TxType: String {
+enum TxType: String {
     case unknown = ""
     case newOrder = "NEW_ORDER"
     case issueToken = "ISSUE_TOKEN"
@@ -67,38 +67,38 @@ public enum TxType: String {
     case deposit = "DEPOSIT"
 }
 
-public enum TimeInForce: Int {
+enum TimeInForce: Int {
     case unknown = 0
     case goodTillExpire = 1
     case immediateOrCancel = 3
 }
 
-public enum TransactionSide: String {
+enum TransactionSide: String {
     case unknown = ""
     case receive = "RECEIVE"
     case send = "SEND"
 }
 
-public enum OrderType: Int {
+enum OrderType: Int {
     case unknown = 0
     case limit = 2
 }
 
-public enum FeeFor: Int {
+enum FeeFor: Int {
     case unknown = 0
     case proposer = 1
     case all = 2
     case free = 3
 }
 
-public enum VoteOption: Int {
+enum VoteOption: Int {
     case yes = 1
     case abstain = 2
     case no = 3
     case noWithVeto = 4
 }
 
-public enum QueryPath: String {
+enum QueryPath: String {
     case storeAccountKey = "/store/acc/key"
     case tokensInfo = "/tokens/info"
     case tokensList = "/tokens/list"
