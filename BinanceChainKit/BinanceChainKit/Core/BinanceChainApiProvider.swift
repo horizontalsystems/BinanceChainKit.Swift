@@ -9,6 +9,7 @@ class BinanceChainApiProvider {
 
     enum ApiError: Error {
         case noTransactionReturned
+        case wrongTransaction
         case apiError(message: String)
     }
 
@@ -47,6 +48,7 @@ class BinanceChainApiProvider {
         public var candlesticks: [Candlestick] = []
         public var ticker: [TickerStatistics] = []
         public var broadcast: [ApiTransaction] = []
+        public var apiTransaction: ApiTransaction = ApiTransaction()
         public var orders: [Order] = []
         public var order: Order = Order()
         public var orderList: OrderList = OrderList()
@@ -96,9 +98,9 @@ class BinanceChainApiProvider {
         return self.api(path: path, method: .get, parser: SequenceParser()).map { $0.sequence }
     }
 
-    private func tx(hash: String) -> Single<Tx> {
+    private func tx(hash: String) -> Single<ApiTransaction> {
         let path = String(format: "%@/%@?format=json", Path.tx.rawValue, hash)
-        return self.api(path: path, method: .get, parser: TxParser()).map { $0.tx }
+        return self.api(path: path, method: .get, parser: ApiTransactionParser()).map { $0.apiTransaction }
     }
 
     private func tokens(limit: Limit? = nil, offset: Int? = nil) {
@@ -364,15 +366,25 @@ extension BinanceChainApiProvider: IApiProvider {
         return account(address: address)
     }
 
-    func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<Tx> {
+    func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String> {
         let message = Message.transfer(symbol: symbol, amount: amount, to: to, memo: memo, wallet: wallet)
 
         return broadcast(message: message, sync: true).map { transactions in
+            self.logger?.debug("Transaction received in response: \(transactions)")
+
             guard let transaction = transactions.first else {
                 throw ApiError.noTransactionReturned
             }
 
-            return transaction.tx
+            guard transaction.ok else {
+                throw ApiError.wrongTransaction
+            }
+
+            return transaction.hash
         }
+    }
+
+    func blockHeightSingle(forTransaction hash: String) -> Single<Int> {
+        return tx(hash: hash).map { Int($0.height) ?? 0 }
     }
 }

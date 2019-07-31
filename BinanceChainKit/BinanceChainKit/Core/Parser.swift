@@ -136,6 +136,8 @@ class Parser {
         let transaction = ApiTransaction()
         transaction.hash = json["hash"].stringValue
         transaction.log = json["log"].stringValue
+        transaction.height = json["height"].stringValue
+        transaction.code = json["code"].intValue
         transaction.ok = json["ok"].boolValue
         let data = JSON(parseJSON: json["data"].stringValue)
         transaction.tx = try self.parseTx(data)
@@ -386,6 +388,12 @@ class ValidatorsParser: Parser {
 class BroadcastParser: Parser {
     override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.broadcast = try json.map({ try self.parseTransaction($0.1) })
+    }
+}
+
+class ApiTransactionParser: Parser {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
+        response.apiTransaction = try self.parseTransaction(json)
     }
 }
 

@@ -105,9 +105,17 @@ extension BinanceChainKit {
 
         return transactionManager.sendSingle(account: account, symbol: symbol, to: to, amount: amount, memo: memo)
                 .do(onSuccess: { [weak self] hash in
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                        self?.refresh()
+                    guard let kit = self else {
+                        return
                     }
+
+                    kit.transactionManager.blockHeightSingle(forTransaction: hash).subscribe(
+                            onSuccess: { blockHeight in
+                                kit.refresh()
+                            }, onError: { error in
+                                kit.logger?.error("Transaction send error: \(error)")
+                            })
+                            .disposed(by: kit.disposeBag)
                 })
     }
 

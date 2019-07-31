@@ -127,7 +127,6 @@ class Message {
         self.wallet.incrementSequence()
 
         return transaction
-
     }
 
     // MARK: - Private

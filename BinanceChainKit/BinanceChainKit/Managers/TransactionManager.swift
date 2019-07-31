@@ -1,6 +1,10 @@
 import RxSwift
 
 class TransactionManager {
+    enum TransactionManagerError: Error {
+        case transactionNotIncludedInBlock
+    }
+
     weak var delegate: ITransactionManagerDelegate?
 
     private let storage: IStorage
@@ -68,12 +72,31 @@ class TransactionManager {
     }
 
     func sendSingle(account: String, symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
-        return accountSyncer.sync(wallet: wallet).flatMap {
-            return self.apiProvider
-                    .sendSingle(symbol: symbol, to: to, amount: Double(truncating: amount as NSNumber), memo: memo, wallet: self.wallet)
-                    .map { tx in
-                return tx.txHash
-            }
-        }
+        return accountSyncer.sync(wallet: wallet)
+                .flatMap {
+                    let amountDouble = Double(truncating: amount as NSNumber)
+                    return self.apiProvider.sendSingle(symbol: symbol, to: to, amount: amountDouble, memo: memo, wallet: self.wallet)
+                }
     }
+
+    func blockHeightSingle(forTransaction hash: String, retriesCount: Int = 0) -> Single<Int> {
+        guard retriesCount < 5 else {
+            return Single.error(TransactionManagerError.transactionNotIncludedInBlock)
+        }
+
+        logger?.verbose("Checking blockHeight of transaction \(hash) for \(retriesCount) time")
+        return apiProvider.blockHeightSingle(forTransaction: hash)
+                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+                .flatMap { blockHeight in
+                    guard blockHeight > 0 else {
+                        self.logger?.verbose("Transaction not in block yet")
+                        sleep(1)
+                        return self.blockHeightSingle(forTransaction: hash, retriesCount: retriesCount + 1)
+                    }
+
+                    self.logger?.verbose("Transaction in blockHeight: \(blockHeight)")
+                    return Single.just(blockHeight)
+                }
+    }
+
 }

@@ -51,6 +51,8 @@ class ApiTransaction: CustomStringConvertible {
     var hash: String = ""
     var log: String = ""
     var data: String = ""
+    var height: String = ""
+    var code: Int = 0
     var ok: Bool = false
     var tx: Tx = Tx()
 }
