@@ -8,7 +8,7 @@ public class BinanceChainKit {
     private let transactionManager: TransactionManager
     private let reachabilityManager: ReachabilityManager
 
-    private let logger: Logger
+    private let logger: Logger?
 
     public let account: String
     public var latestBlockHeight: Int?
@@ -23,7 +23,7 @@ public class BinanceChainKit {
         }
     }
 
-    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, logger: Logger) {
+    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, logger: Logger? = nil) {
         self.account = account
         self.balanceManager = balanceManager
         self.transactionManager = transactionManager
@@ -70,11 +70,11 @@ extension BinanceChainKit {
         }
 
         guard syncState != .syncing else {
-            logger.verbose("Already syncing balances")
+            logger?.debug("Already syncing balances")
             return
         }
 
-        logger.verbose("Syncing")
+        logger?.debug("Syncing")
         syncState = .syncing
 
         balanceManager.sync(account: account)
@@ -96,7 +96,7 @@ extension BinanceChainKit {
     }
 
     public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
-        logger.verbose("Sending \(amount) \(symbol) to \(to)")
+        logger?.debug("Sending \(amount) \(symbol) to \(to)")
 
         return transactionManager.sendSingle(account: account, symbol: symbol, to: to, amount: amount, memo: memo)
                 .do(onSuccess: { [weak self] hash in
@@ -144,12 +144,12 @@ extension BinanceChainKit {
         let logger = Logger(minLogLevel: minLogLevel)
 
         let uniqueId = "\(walletId)-\(networkType)"
-        let storage: IStorage = try Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "eos-\(uniqueId)")
+        let storage: IStorage = try Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "binance-chain-\(uniqueId)")
 
         let hdWallet = HDWallet(seed: Mnemonic.seed(mnemonic: words), coinType: 714, xPrivKey: 0, xPubKey: 0)
         let wallet = try Wallet(hdWallet: hdWallet, networkType: networkType)
 
-        let apiProvider = BinanceChainApiProvider(endpoint: networkType.endpoint)
+        let apiProvider = BinanceChainApiProvider(endpoint: networkType.endpoint, logger: logger)
 
         let accountSyncer = AccountSyncer(apiProvider: apiProvider, logger: logger)
         let balanceManager = BalanceManager(storage: storage, accountSyncer: accountSyncer, logger: logger)
@@ -178,7 +178,7 @@ extension BinanceChainKit {
 
         let url = try fileManager
                 .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-                .appendingPathComponent("eos-kit", isDirectory: true)
+                .appendingPathComponent("binance-chain-kit", isDirectory: true)
 
         try fileManager.createDirectory(at: url, withIntermediateDirectories: true)
 
@@ -189,24 +189,6 @@ extension BinanceChainKit {
 
 
 extension BinanceChainKit {
-
-    public enum NetworkError: Error {
-        case invalidUrl
-        case mappingError
-        case noConnection
-        case serverError(status: Int, data: Any?)
-    }
-
-    public enum SendError: Error {
-        case invalidAddress
-        case invalidContractAddress
-        case invalidValue
-        case nodeError(message: String)
-    }
-
-    public enum ApiError: Error {
-        case invalidData
-    }
 
     public enum SyncState {
         case synced

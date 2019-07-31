@@ -30,14 +30,15 @@ class BalanceManager {
                 .subscribe(onSuccess: { [weak self] nodeInfo, account in
                     self?.handle(nodeInfo: nodeInfo, account: account)
                 }, onError: { [weak self] error in
-                    self?.logger?.error("Sync Failed: lastBlockHeight and balance: \(error)")
+                    self?.logger?.error("Failed to sync nodeInfo and account: \(error)")
                     self?.delegate?.didFailToSync()
                 })
                 .disposed(by: disposeBag)
     }
 
     private func handle(nodeInfo: NodeInfo, account: Account) {
-        logger?.debug("Balances received")
+        logger?.debug("NodeInfo received with network: \(nodeInfo.network); latestBlockHeight: \(String(describing: nodeInfo.syncInfo["latest_block_height"]))")
+        logger?.debug("Balances received for \(account.balances.map { "\($0.symbol): \($0.free)" }.joined(separator: ", "))")
 
         let balances = account.balances.map { Balance(symbol: $0.symbol, amount: Decimal($0.free)) }
         storage.save(balances: balances)
@@ -45,8 +46,8 @@ class BalanceManager {
         guard let latestBlock = LatestBlock(syncInfo: nodeInfo.syncInfo) else {
             return
         }
-        storage.save(latestBlock: latestBlock)
 
+        storage.save(latestBlock: latestBlock)
         delegate?.didSync(balances: balances, latestBlockHeight: latestBlock.height)
     }
 

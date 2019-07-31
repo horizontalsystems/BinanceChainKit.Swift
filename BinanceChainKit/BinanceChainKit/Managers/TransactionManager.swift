@@ -27,7 +27,7 @@ class TransactionManager {
 
     func sync(account: String) {
         let syncedUntilTime = storage.syncState?.transactionSyncedUntilTime ?? binanceLaunchTime
-        logger?.verbose("Syncing transactions starting from \(syncedUntilTime)")
+        logger?.debug("Syncing transactions starting from \(syncedUntilTime)")
 
         syncTransactionsPartially(account: account, startTime: syncedUntilTime.timeIntervalSince1970)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
@@ -40,7 +40,7 @@ class TransactionManager {
     private func syncTransactionsPartially(account: String, startTime: TimeInterval) -> Single<Void> {
         return apiProvider.transactionsSingle(account: account, startTime: startTime)
                 .flatMap { txs in
-                    self.logger?.debug("Transactions received: \(txs.count)")
+                    self.logger?.debug("\(txs.count) transactions received: [\(txs.map { $0.txHash }.joined(separator: ", "))]")
 
                     let transactions = txs.compactMap { Transaction(tx: $0) }
                     let currentTime = Date().timeIntervalSince1970

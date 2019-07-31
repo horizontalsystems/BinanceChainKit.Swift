@@ -62,9 +62,11 @@ class BinanceChainApiProvider {
     }
 
     private var endpoint: String
+    private var logger: Logger?
 
-    init(endpoint: String) {
+    init(endpoint: String, logger: Logger? = nil) {
         self.endpoint = endpoint
+        self.logger = logger
     }
 
 
@@ -307,11 +309,7 @@ class BinanceChainApiProvider {
             encoding = HexEncoding(data: body)
         }
         let url = String(format: "%@/api/v1/%@", self.endpoint, path)
-        print("")
-        print("url: \(url)")
-        print("method: \(method)")
-        print("parameters: \(parameters)")
-        print("body: \(encoding)")
+        logger?.debug("Sending Request. URL: \(url), method: \(method), parameters: \(parameters), bodyExists: \(body != nil)")
 
         let single = Single<BinanceChainApiProvider.Response>.create { observer in
             let request = Alamofire.request(url, method: method, parameters: parameters, encoding: encoding)
