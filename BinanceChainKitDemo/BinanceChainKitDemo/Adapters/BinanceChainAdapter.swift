@@ -27,7 +27,7 @@ class BinanceChainAdapter {
 
         return TransactionRecord(
                 hash: transaction.hash,
-                blockNumber: transaction.blockNumber,
+                blockNumber: transaction.blockHeight,
                 date: transaction.date,
                 from: from,
                 to: to,

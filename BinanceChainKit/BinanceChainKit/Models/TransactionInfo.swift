@@ -1,6 +1,6 @@
 public class TransactionInfo {
     public let hash: String
-    public let blockNumber: Int
+    public let blockHeight: Int
     public let date: Date
     public let from: String
     public let to: String
@@ -11,7 +11,7 @@ public class TransactionInfo {
 
     init(transaction: Transaction) {
         self.hash = transaction.hash
-        self.blockNumber = transaction.blockNumber
+        self.blockHeight = transaction.blockHeight
         self.date = transaction.date
         self.from = transaction.from
         self.to = transaction.to

@@ -5,7 +5,7 @@ import RxSwift
 
 // https://binance-chain.github.io/api-reference/dex-api/paths.html
 
-class AcceleratedNodeApiProvider {
+class BinanceChainApiProvider {
 
     enum ApiError: Error {
         case noTransactionReturned
@@ -297,11 +297,11 @@ class AcceleratedNodeApiProvider {
     // MARK: - Utils
 
     @discardableResult
-    func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<AcceleratedNodeApiProvider.Response> {
+    func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<BinanceChainApiProvider.Response> {
         return self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser)
     }
 
-    func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<AcceleratedNodeApiProvider.Response> {
+    func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<BinanceChainApiProvider.Response> {
         var encoding: ParameterEncoding = URLEncoding.default
         if let body = body {
             encoding = HexEncoding(data: body)
@@ -313,11 +313,11 @@ class AcceleratedNodeApiProvider {
         print("parameters: \(parameters)")
         print("body: \(encoding)")
 
-        let single = Single<AcceleratedNodeApiProvider.Response>.create { observer in
+        let single = Single<BinanceChainApiProvider.Response>.create { observer in
             let request = Alamofire.request(url, method: method, parameters: parameters, encoding: encoding)
             request.validate(statusCode: 200..<499)
             request.responseData(queue: DispatchQueue.global(qos: .background)) { (http) -> Void in
-                let response = AcceleratedNodeApiProvider.Response()
+                let response = BinanceChainApiProvider.Response()
 
                 switch http.result {
                 case .success(let data):
@@ -352,14 +352,14 @@ class AcceleratedNodeApiProvider {
 
 }
 
-extension AcceleratedNodeApiProvider: IApiProvider {
+extension BinanceChainApiProvider: IApiProvider {
 
     func nodeInfoSingle() -> Single<NodeInfo> {
         return nodeInfo()
     }
 
-    func transactionsSingle(account: String, offset: Int, startTime: TimeInterval) -> Single<[Tx]> {
-        return transactions(address: account, offset: offset, startTime: startTime, txType: .transfer).map { $0.tx }
+    func transactionsSingle(account: String, startTime: TimeInterval) -> Single<[Tx]> {
+        return transactions(address: account, startTime: startTime, txType: .transfer).map { $0.tx }
     }
 
     func accountSingle(for address: String) -> Single<Account> {

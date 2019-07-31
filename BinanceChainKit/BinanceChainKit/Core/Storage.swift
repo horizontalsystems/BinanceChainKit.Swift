@@ -51,6 +51,15 @@ class Storage {
             }
         }
 
+        migrator.registerMigration("createSyncStates") { db in
+            try db.create(table: SyncState.databaseTableName) { t in
+                t.column(SyncState.Columns.primaryKey.name, .text).notNull()
+                t.column(SyncState.Columns.transactionSyncedUntilTime.name, .date).notNull()
+
+                t.primaryKey([SyncState.Columns.primaryKey.name], onConflict: .replace)
+            }
+        }
+
         return migrator
     }
 
@@ -67,6 +76,18 @@ extension Storage: IStorage {
     func save(latestBlock: LatestBlock) {
         _ = try? dbPool.write { db in
             try latestBlock.insert(db)
+        }
+    }
+
+    var syncState: SyncState? {
+        return try? dbPool.read { db in
+            try SyncState.fetchOne(db)
+        }
+    }
+
+    func save(syncState: SyncState) {
+        _ = try? dbPool.write { db in
+            try syncState.insert(db)
         }
     }
 

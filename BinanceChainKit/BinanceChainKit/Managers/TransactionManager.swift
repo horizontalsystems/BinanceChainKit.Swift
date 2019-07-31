@@ -7,11 +7,13 @@ class TransactionManager {
     private let wallet: Wallet
     private let apiProvider: IApiProvider
     private let accountSyncer: AccountSyncer
-    private let logger: Logger
+    private let logger: Logger?
 
     private let disposeBag = DisposeBag()
+    private let windowTime: TimeInterval = 88 * 24 * 3600 // 3 months duration
+    private let binanceLaunchTime: Date = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, year: 2019, month: 3, day: 7).date!
 
-    init(storage: IStorage, wallet: Wallet, apiProvider: IApiProvider, accountSyncer: AccountSyncer, logger: Logger) {
+    init(storage: IStorage, wallet: Wallet, apiProvider: IApiProvider, accountSyncer: AccountSyncer, logger: Logger?) {
         self.storage = storage
         self.wallet = wallet
         self.apiProvider = apiProvider
@@ -24,32 +26,45 @@ class TransactionManager {
     }
 
     func sync(account: String) {
-        logger.verbose("Syncing transactions starting from \(0)")
+        let syncedUntilTime = storage.syncState?.transactionSyncedUntilTime ?? binanceLaunchTime
+        logger?.verbose("Syncing transactions starting from \(syncedUntilTime)")
 
-        let startTime = Date().addingTimeInterval(-3*30*24*60*60).timeIntervalSince1970
-        apiProvider.transactionsSingle(account: account, offset: 0, startTime: startTime)
+        syncTransactionsPartially(account: account, startTime: syncedUntilTime.timeIntervalSince1970)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-                .subscribe(onSuccess: { [weak self] transactions in
-                    self?.handle(transactions: transactions)
-                }, onError: { [weak self] error in
-                    self?.logger.error("TransactionManager sync failure: \(error.localizedDescription)")
-                }
-        ).disposed(by: disposeBag)
+                .subscribe(onSuccess: {}, onError: { [weak self] error in
+                    self?.logger?.error("TransactionManager sync failure: \(error.localizedDescription)")
+                })
+                .disposed(by: disposeBag)
     }
 
-    private func handle(transactions: [Tx]) {
-        logger.debug("Transactions received: \(transactions.count)")
+    private func syncTransactionsPartially(account: String, startTime: TimeInterval) -> Single<Void> {
+        return apiProvider.transactionsSingle(account: account, startTime: startTime)
+                .flatMap { txs in
+                    self.logger?.debug("Transactions received: \(txs.count)")
 
-        let transactions = transactions.compactMap { Transaction(tx: $0) }
+                    let transactions = txs.compactMap { Transaction(tx: $0) }
+                    let currentTime = Date().timeIntervalSince1970
 
-        guard !transactions.isEmpty else {
-            return
-        }
+                    let syncedUntil: TimeInterval
+                    if transactions.count >= 1000, let lastTransaction = transactions.last {
+                        syncedUntil = lastTransaction.date.timeIntervalSince1970
+                    } else {
+                        syncedUntil = min(startTime + self.windowTime, currentTime)
+                    }
 
-        storage.save(transactions: transactions)
-        delegate?.didSync(transactions: transactions)
+                    self.storage.save(syncState: SyncState(transactionSyncedUntilTime: syncedUntil))
 
-//        sync(account: account)
+                    if transactions.count > 0 {
+                        self.storage.save(transactions: transactions)
+                        self.delegate?.didSync(transactions: transactions)
+                    }
+
+                    if (syncedUntil < currentTime) {
+                        return self.syncTransactionsPartially(account: account, startTime: syncedUntil)
+                    } else {
+                        return Single.just(())
+                    }
+                }
     }
 
     func sendSingle(account: String, symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {

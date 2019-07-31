@@ -149,7 +149,7 @@ extension BinanceChainKit {
         let hdWallet = HDWallet(seed: Mnemonic.seed(mnemonic: words), coinType: 714, xPrivKey: 0, xPubKey: 0)
         let wallet = try Wallet(hdWallet: hdWallet, networkType: networkType)
 
-        let apiProvider = AcceleratedNodeApiProvider(endpoint: networkType.endpoint)
+        let apiProvider = BinanceChainApiProvider(endpoint: networkType.endpoint)
 
         let accountSyncer = AccountSyncer(apiProvider: apiProvider, logger: logger)
         let balanceManager = BalanceManager(storage: storage, accountSyncer: accountSyncer, logger: logger)

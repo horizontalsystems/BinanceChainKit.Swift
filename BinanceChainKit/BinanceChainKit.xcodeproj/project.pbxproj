@@ -10,10 +10,11 @@
 		2FA5D1AE8DC4F62119811D6F /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D994B99A65775E087086 /* Parser.swift */; };
 		2FA5D30C07AD8BEB427BBCFB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DADBADF2AD41E5C42B50 /* Extensions.swift */; };
 		2FA5D4121857473A3E42E36C /* DexProtobuf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D806AC44C116C08BCFE6 /* DexProtobuf.swift */; };
-		2FA5D5209A54F2F00D865C2F /* AcceleratedNodeApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D5641E96FD7107A0FC9B /* AcceleratedNodeApiProvider.swift */; };
+		2FA5D5209A54F2F00D865C2F /* BinanceChainApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D5641E96FD7107A0FC9B /* BinanceChainApiProvider.swift */; };
 		2FA5D613858CB68618A4A7FD /* AccountSyncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DCE5C94B43E71015E3FF /* AccountSyncer.swift */; };
 		2FA5D64F1C8586E0D5C790CA /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D6C70D965D0E6E49BB0C /* Messages.swift */; };
 		2FA5D6D8A50565F3FF5262E6 /* TransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D6465CB3D61C28C8E9A4 /* TransactionInfo.swift */; };
+		2FA5D7D1CA45D80B5B8C48EB /* SyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DB7256C0EC41B39DCE85 /* SyncState.swift */; };
 		2FA5D808BFB26D88E81F7E7E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DB3A9B3BC1A05F84598E /* Models.swift */; };
 		2FA5D8C98BF02939A764BECC /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D7C08ADA6DE62AFDD68A /* Protocols.swift */; };
 		2FA5D96E39BD23BA95903CE8 /* HexEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5DF446305FDF08EA473DB /* HexEncoding.swift */; };
@@ -53,7 +54,7 @@
 /* Begin PBXFileReference section */
 		02CA57BCD69E2B771ADB1B50 /* Pods-BinanceChainKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinanceChainKitTests.release.xcconfig"; path = "Target Support Files/Pods-BinanceChainKitTests/Pods-BinanceChainKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		2FA5D06BD6F91EDC72377030 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		2FA5D5641E96FD7107A0FC9B /* AcceleratedNodeApiProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AcceleratedNodeApiProvider.swift; sourceTree = "<group>"; };
+		2FA5D5641E96FD7107A0FC9B /* BinanceChainApiProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinanceChainApiProvider.swift; sourceTree = "<group>"; };
 		2FA5D6465CB3D61C28C8E9A4 /* TransactionInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionInfo.swift; sourceTree = "<group>"; };
 		2FA5D6C70D965D0E6E49BB0C /* Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		2FA5D7C08ADA6DE62AFDD68A /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -62,6 +63,7 @@
 		2FA5DAB42DF0DD2BA111DF00 /* Bech32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
 		2FA5DADBADF2AD41E5C42B50 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		2FA5DB3A9B3BC1A05F84598E /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		2FA5DB7256C0EC41B39DCE85 /* SyncState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncState.swift; sourceTree = "<group>"; };
 		2FA5DC072C6789E54BED6287 /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		2FA5DC0F24F62938171D4A3A /* SegWitBech32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegWitBech32.swift; sourceTree = "<group>"; };
 		2FA5DC3FB6AEE5C069E2ACA7 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 				D01E2FBC22EF35CB001B98B8 /* LatestBlock.swift */,
 				2FA5D6465CB3D61C28C8E9A4 /* TransactionInfo.swift */,
 				D01E2FB322EEF821001B98B8 /* Transaction.swift */,
+				2FA5DB7256C0EC41B39DCE85 /* SyncState.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -208,7 +211,7 @@
 		D0B7AA3D22E82BBD00831556 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				2FA5D5641E96FD7107A0FC9B /* AcceleratedNodeApiProvider.swift */,
+				2FA5D5641E96FD7107A0FC9B /* BinanceChainApiProvider.swift */,
 				D0B7AA3E22E82BCB00831556 /* BinanceChainKit.swift */,
 				D0B7AA4022E82CE600831556 /* Logger.swift */,
 				2FA5D06BD6F91EDC72377030 /* Error.swift */,
@@ -426,7 +429,7 @@
 				2FA5D64F1C8586E0D5C790CA /* Messages.swift in Sources */,
 				2FA5D1AE8DC4F62119811D6F /* Parser.swift in Sources */,
 				D01E2FB722EEF821001B98B8 /* Balance.swift in Sources */,
-				2FA5D5209A54F2F00D865C2F /* AcceleratedNodeApiProvider.swift in Sources */,
+				2FA5D5209A54F2F00D865C2F /* BinanceChainApiProvider.swift in Sources */,
 				2FA5DE1763EC069B2F0A1CDC /* Error.swift in Sources */,
 				2FA5D4121857473A3E42E36C /* DexProtobuf.swift in Sources */,
 				2FA5DE2093940926F02CFF41 /* Types.swift in Sources */,
@@ -439,6 +442,7 @@
 				D01E2FB922EEF821001B98B8 /* Transaction.swift in Sources */,
 				2FA5D808BFB26D88E81F7E7E /* Models.swift in Sources */,
 				2FA5D613858CB68618A4A7FD /* AccountSyncer.swift in Sources */,
+				2FA5D7D1CA45D80B5B8C48EB /* SyncState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

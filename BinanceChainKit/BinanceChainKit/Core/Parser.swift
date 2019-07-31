@@ -15,7 +15,7 @@ class Parser {
 
     }
 
-    func parse(response: AcceleratedNodeApiProvider.Response, data: Data) throws {
+    func parse(response: BinanceChainApiProvider.Response, data: Data) throws {
         guard let json = try? JSON(data: data) else {
             guard let body = String(data: data, encoding: .utf8) else { throw ParseError() }
             response.error = BinanceError(message: body)
@@ -24,7 +24,7 @@ class Parser {
         try self.parse(json, response: response)
     }
 
-    func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         // Subclasses to override
     }
 
@@ -342,151 +342,151 @@ class Parser {
 }
 
 class ErrorParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.error = self.parseError(json)
     }
 }
 
 class TokenParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.tokens = json.map({ self.parseToken($0.1) })
     }
 }
 
 class PeerParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.peers = json.map({ self.parsePeer($0.1) })
     }
 }
 
 class TradeParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.trades = try json["trade"].map({ try self.parseTrade($0.1) })
     }
 }
 
 class MarketDepthParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.marketDepth = self.parseMarketDepth(json)
     }
 }
 
 class TimesParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.time = try self.parseTimes(json)
     }
 }
 
 class ValidatorsParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.validators = self.parseValidators(json)
     }
 }
 
 class BroadcastParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.broadcast = try json.map({ try self.parseTransaction($0.1) })
     }
 }
 
 class TransactionsParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.transactions = try self.parseTransactions(json)
     }
 }
 
 class NodeInfoParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.nodeInfo = try self.parseNodeInfo(json)
     }
 }
 
 class MarketsParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.markets = json.map({ self.parseMarket($0.1) })
     }
 }
 
 class AccountParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.account = self.parseAccount(json)
     }
 }
 
 class SequenceParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
         response.sequence = json["sequence"].intValue
     }
 }
 
 class TxParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.tx = try self.parseTx(json)
     }
 }
 
 class CandlestickParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.candlesticks = [ try self.parseCandlestick(json) ]
     }
 }
 
 class CandlesticksParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.candlesticks = try json.map({ try self.parseCandlestick($0.1) })
     }
 }
 
 class TickerStatisticParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.ticker = [ try self.parseTickerStatistics(json) ]
     }
 }
 
 class TickerStatisticsParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.ticker = try json.map({ try self.parseTickerStatistics($0.1) })
     }
 }
 
 class OrderParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.order = try self.parseOrder(json)
     }
 }
 
 class OrdersParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.orders = try json.arrayValue.map({ try self.parseOrder($0) })
     }
 }
 
 class OrderListParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.orderList = try self.parseOrderList(json)
     }
 }
 
 class FeesParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.fees = try json.map({ try self.parseFee($0.1) })
     }
 }
 
 class MarketDepthUpdateParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.marketDepthUpdate = self.parseMarketDepthUpdate(json)
     }
 }
 
 class TransferParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.transfer = try self.parseTransfer(json)
     }
 }
 
 class BlockHeightParser: Parser {
-    override func parse(_ json: JSON, response: AcceleratedNodeApiProvider.Response) throws {
+    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         response.blockHeight = parseBlockHeight(json)
     }
 }

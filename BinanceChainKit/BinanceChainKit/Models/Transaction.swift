@@ -1,17 +1,17 @@
 import GRDB
 
-public class Transaction: Record {
+class Transaction: Record {
     static let decimal = 8 // 8-digit decimals
 
-    public let hash: String
-    public let blockNumber: Int
-    public let date: Date
-    public let from: String
-    public let to: String
-    public let amount: Decimal
-    public let fee: Decimal
-    public let symbol: String
-    public let memo: String?
+    let hash: String
+    let blockHeight: Int
+    let date: Date
+    let from: String
+    let to: String
+    let amount: Decimal
+    let fee: Decimal
+    let symbol: String
+    let memo: String?
 
 
     init?(tx: Tx) {
@@ -21,7 +21,7 @@ public class Transaction: Record {
         }
 
         hash = tx.txHash
-        blockNumber = Int(tx.blockHeight)
+        blockHeight = Int(tx.blockHeight)
         date = tx.timestamp
         from = tx.fromAddr
         to = tx.toAddr
@@ -51,7 +51,7 @@ public class Transaction: Record {
 
     required init(row: Row) {
         hash = row[Columns.hash]
-        blockNumber = row[Columns.blockNumber]
+        blockHeight = row[Columns.blockNumber]
         date = row[Columns.date]
         from = row[Columns.from]
         to = row[Columns.to]
@@ -65,7 +65,7 @@ public class Transaction: Record {
 
     override public func encode(to container: inout PersistenceContainer) {
         container[Columns.hash] = hash
-        container[Columns.blockNumber] = blockNumber
+        container[Columns.blockNumber] = blockHeight
         container[Columns.date] = date
         container[Columns.from] = from
         container[Columns.to] = to
