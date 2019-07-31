@@ -51,7 +51,7 @@ extension BinanceChainAdapter {
     }
 
     var latestBlockHeight: Int? {
-        return binanceChainKit.latestBlockHeight
+        return binanceChainKit.lastBlockHeight
     }
 
     var syncState: BinanceChainKit.SyncState {

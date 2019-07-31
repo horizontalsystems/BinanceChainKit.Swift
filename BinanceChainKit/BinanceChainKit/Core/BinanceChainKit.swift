@@ -11,7 +11,6 @@ public class BinanceChainKit {
     private let logger: Logger?
 
     public let account: String
-    public var latestBlockHeight: Int?
     private let lastBlockHeightSubject = PublishSubject<Int>()
     private let syncStateSubject = PublishSubject<BinanceChainKit.SyncState>()
 
@@ -23,6 +22,14 @@ public class BinanceChainKit {
         }
     }
 
+    public var lastBlockHeight: Int? {
+        didSet {
+            if let lastBlockHeight = lastBlockHeight {
+                lastBlockHeightSubject.onNext(lastBlockHeight)
+            }
+        }
+    }
+
     init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, logger: Logger? = nil) {
         self.account = account
         self.balanceManager = balanceManager
@@ -31,7 +38,7 @@ public class BinanceChainKit {
         self.segWitHelper = segWitHelper
         self.logger = logger
 
-        latestBlockHeight = balanceManager.latestBlock?.height
+        lastBlockHeight = balanceManager.latestBlock?.height
 
         reachabilityManager.reachabilitySignal
                 .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
@@ -128,8 +135,7 @@ extension BinanceChainKit: IBalanceManagerDelegate {
         for balance in balances {
             asset(symbol: balance.symbol)?.balance = balance.amount
         }
-        self.latestBlockHeight = latestBlockHeight
-
+        lastBlockHeight = latestBlockHeight
         syncState = .synced
     }
 
