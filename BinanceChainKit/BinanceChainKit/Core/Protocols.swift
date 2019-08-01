@@ -2,7 +2,7 @@ import RxSwift
 
 protocol IApiProvider {
     func nodeInfoSingle() -> Single<NodeInfo>
-    func transactionsSingle(account: String, startTime: TimeInterval) -> Single<[Tx]>
+    func transactionsSingle(account: String, limit: Int, startTime: TimeInterval) -> Single<[Tx]>
     func accountSingle(for: String) -> Single<Account>
     func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String>
     func blockHeightSingle(forTransaction: String) -> Single<Int>

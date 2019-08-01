@@ -278,7 +278,7 @@ class BinanceChainApiProvider {
             parameters["endTime"] = endTime
         }
         if let limit = limit {
-            parameters["limit"] = limit
+            parameters["limit"] = limit.rawValue
         }
         if let offset = offset {
             parameters["offset"] = offset
@@ -358,8 +358,8 @@ extension BinanceChainApiProvider: IApiProvider {
         return nodeInfo()
     }
 
-    func transactionsSingle(account: String, startTime: TimeInterval) -> Single<[Tx]> {
-        return transactions(address: account, startTime: startTime, txType: .transfer).map { $0.tx }
+    func transactionsSingle(account: String, limit: Int, startTime: TimeInterval) -> Single<[Tx]> {
+        return transactions(address: account, limit: Limit(rawValue: limit), startTime: startTime, txType: .transfer).map { $0.tx }
     }
 
     func accountSingle(for address: String) -> Single<Account> {

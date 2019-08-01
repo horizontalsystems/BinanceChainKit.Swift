@@ -42,12 +42,12 @@ class TransactionManager {
     }
 
     private func syncTransactionsPartially(account: String, startTime: TimeInterval) -> Single<Void> {
-        return apiProvider.transactionsSingle(account: account, startTime: startTime)
+        return apiProvider.transactionsSingle(account: account, limit: 1000, startTime: startTime)
                 .flatMap { txs in
                     self.logger?.debug("\(txs.count) transactions received: [\(txs.map { $0.txHash }.joined(separator: ", "))]")
 
                     let transactions = txs.compactMap { Transaction(tx: $0) }
-                    let currentTime = Date().timeIntervalSince1970
+                    let currentTime = Date().timeIntervalSince1970 - 60
 
                     let syncedUntil: TimeInterval
                     if transactions.count >= 1000, let lastTransaction = transactions.last {

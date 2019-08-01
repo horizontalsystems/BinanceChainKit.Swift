@@ -118,8 +118,9 @@ extension Storage: IStorage {
             try? self?.dbPool.read { db in
                 var request = Transaction.filter(Transaction.Columns.symbol == symbol)
 
-                if let fromTransactionHash = fromTransactionHash {
-                    request = request.filter(Transaction.Columns.hash < fromTransactionHash)
+                if let transactionHash = fromTransactionHash,
+                   let transaction = try Transaction.filter(Transaction.Columns.hash == transactionHash).fetchOne(db) {
+                    request = request.filter(Transaction.Columns.date < transaction.date)
                 }
 
                 if let limit = limit {
