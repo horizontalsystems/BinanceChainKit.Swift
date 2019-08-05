@@ -30,6 +30,10 @@ public class BinanceChainKit {
         }
     }
 
+    public var binanceBalance: Decimal {
+        return balanceManager.balance(symbol: "BNB")?.amount ?? 0
+    }
+
     init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, logger: Logger? = nil) {
         self.account = account
         self.balanceManager = balanceManager
