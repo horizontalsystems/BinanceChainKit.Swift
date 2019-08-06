@@ -2,7 +2,7 @@ import GRDB
 
 class Balance: Record {
     let symbol: String
-    let amount: Decimal
+    var amount: Decimal
 
     init(symbol: String, amount: Decimal) {
         self.symbol = symbol

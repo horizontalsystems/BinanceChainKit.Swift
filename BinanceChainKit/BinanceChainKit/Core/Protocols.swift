@@ -16,6 +16,8 @@ protocol IStorage {
     func save(syncState: SyncState)
 
     func balance(symbol: String) -> Balance?
+    func allBalances() -> [Balance]
+    func remove(balances: [Balance])
     func save(balances: [Balance])
     func save(transactions: [Transaction])
 

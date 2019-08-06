@@ -42,7 +42,7 @@ class Manager {
 
         binanceAdapters = [
             BinanceChainAdapter(binanceChainKit: binanceChainKit, symbol: "BNB"),
-            BinanceChainAdapter(binanceChainKit: binanceChainKit, symbol: "ZCB-F00"),
+            BinanceChainAdapter(binanceChainKit: binanceChainKit, symbol: "AXPR-A6B"),
         ]
 
         self.binanceChainKit = binanceChainKit

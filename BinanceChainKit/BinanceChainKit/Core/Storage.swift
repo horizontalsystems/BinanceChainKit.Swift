@@ -97,6 +97,20 @@ extension Storage: IStorage {
         }
     }
 
+    func allBalances() -> [Balance] {
+        return try! dbPool.read { db in
+            try Balance.fetchAll(db)
+        }
+    }
+
+    func remove(balances: [Balance]) {
+        _ = try? dbPool.write { db in
+            for balance in balances {
+                try balance.delete(db)
+            }
+        }
+    }
+
     func save(balances: [Balance]) {
         _ = try? dbPool.write { db in
             for balance in  balances {

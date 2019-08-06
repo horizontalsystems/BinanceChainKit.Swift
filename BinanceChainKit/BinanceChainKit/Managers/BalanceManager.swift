@@ -40,15 +40,26 @@ class BalanceManager {
         logger?.debug("NodeInfo received with network: \(nodeInfo.network); latestBlockHeight: \(String(describing: nodeInfo.syncInfo["latest_block_height"]))")
         logger?.debug("Balances received for \(account.balances.map { "\($0.symbol): \($0.free)" }.joined(separator: ", "))")
 
+        let oldBalances = storage.allBalances()
         let balances = account.balances.map { Balance(symbol: $0.symbol, amount: Decimal($0.free)) }
+        var toRemove = [Balance]()
+
+        for oldBalance in oldBalances {
+            if !balances.contains(where: { $0.symbol == oldBalance.symbol }) {
+                oldBalance.amount = 0
+                toRemove.append(oldBalance)
+            }
+        }
+
         storage.save(balances: balances)
+        storage.remove(balances: toRemove)
 
         guard let latestBlock = LatestBlock(syncInfo: nodeInfo.syncInfo) else {
             return
         }
 
         storage.save(latestBlock: latestBlock)
-        delegate?.didSync(balances: balances, latestBlockHeight: latestBlock.height)
+        delegate?.didSync(balances: balances + toRemove, latestBlockHeight: latestBlock.height)
     }
 
 }
