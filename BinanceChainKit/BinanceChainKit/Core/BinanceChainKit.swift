@@ -163,7 +163,7 @@ extension BinanceChainKit: ITransactionManagerDelegate {
 
 extension BinanceChainKit {
 
-    public static func instance(words: [String], networkType: NetworkType = .mainNet, walletId: String = "default", minLogLevel: Logger.Level = .error) throws -> BinanceChainKit {
+    public static func instance(words: [String], networkType: NetworkType = .mainNet, walletId: String, minLogLevel: Logger.Level = .error) throws -> BinanceChainKit {
         let logger = Logger(minLogLevel: minLogLevel)
 
         let uniqueId = "\(walletId)-\(networkType)"
@@ -187,13 +187,14 @@ extension BinanceChainKit {
         return binanceChainKit
     }
 
-    public static func clear() throws {
+    public static func clear(exceptFor excludedFiles: [String]) throws {
         let fileManager = FileManager.default
+        let fileUrls = try fileManager.contentsOfDirectory(at: dataDirectoryUrl(), includingPropertiesForKeys: nil)
 
-        let urls = try fileManager.contentsOfDirectory(at: dataDirectoryUrl(), includingPropertiesForKeys: nil)
-
-        for url in urls {
-            try fileManager.removeItem(at: url)
+        for filename in fileUrls {
+            if !excludedFiles.contains(where: { filename.lastPathComponent.contains($0) }) {
+                try fileManager.removeItem(at: filename)
+            }
         }
     }
 
