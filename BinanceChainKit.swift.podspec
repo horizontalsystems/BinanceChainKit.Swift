@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
   spec.name = 'BinanceChainKit.swift'
   spec.module_name = 'BinanceChainKit'
-  spec.version = '0.1'
+  spec.version = '0.1.1'
   spec.summary = 'Binance blockchain library for Swift'
   spec.description = <<-DESC
                        BinanceChainKit.swift implements BinanceChain protocol in Swift.

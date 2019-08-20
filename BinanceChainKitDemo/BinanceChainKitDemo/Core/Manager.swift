@@ -17,7 +17,7 @@ class Manager {
     }
 
     func login(words: [String]) throws {
-        try BinanceChainKit.clear()
+        try BinanceChainKit.clear(exceptFor: ["walletId"])
         try initBinanceChainKit(words: words)
         save(words: words)
     }
@@ -35,6 +35,7 @@ class Manager {
         let binanceChainKit = try BinanceChainKit.instance(
                 words: words,
                 networkType: configuration.networkType,
+                walletId: "walletId",
                 minLogLevel: configuration.minLogLevel
         )
 
