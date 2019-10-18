@@ -8,6 +8,7 @@ public class BinanceChainKit {
     private let transactionManager: TransactionManager
     private let reachabilityManager: ReachabilityManager
     private let segWitHelper: SegWitBech32
+    private let networkType: NetworkType
     private let logger: Logger?
 
     public let account: String
@@ -34,12 +35,13 @@ public class BinanceChainKit {
         return balanceManager.balance(symbol: "BNB")?.amount ?? 0
     }
 
-    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, logger: Logger? = nil) {
+    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, networkType: NetworkType, logger: Logger? = nil) {
         self.account = account
         self.balanceManager = balanceManager
         self.transactionManager = transactionManager
         self.reachabilityManager = reachabilityManager
         self.segWitHelper = segWitHelper
+        self.networkType = networkType
         self.logger = logger
 
         lastBlockHeight = balanceManager.latestBlock?.height
@@ -130,6 +132,15 @@ extension BinanceChainKit {
                 })
     }
 
+    public var statusInfo: [(String, Any)] {
+        [
+            ("Synced Until", balanceManager.latestBlock?.time ?? "N/A"),
+            ("Last Block Height", balanceManager.latestBlock?.height ?? "N/A"),
+            ("Sync State", syncState.description),
+            ("RPC Host", networkType.endpoint),
+        ]
+    }
+
 }
 
 
@@ -180,7 +191,7 @@ extension BinanceChainKit {
         let transactionManager = TransactionManager(storage: storage, wallet: wallet, apiProvider: apiProvider, accountSyncer: accountSyncer, logger: logger)
         let reachabilityManager = ReachabilityManager()
 
-        let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, segWitHelper: segWitHelper, logger: logger)
+        let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, segWitHelper: segWitHelper, networkType: networkType, logger: logger)
         balanceManager.delegate = binanceChainKit
         transactionManager.delegate = binanceChainKit
 
@@ -215,10 +226,19 @@ extension BinanceChainKit {
 
 extension BinanceChainKit {
 
-    public enum SyncState {
+    public enum SyncState: CustomStringConvertible {
         case synced
         case syncing
         case notSynced
+
+        public var description: String {
+            switch self {
+            case .synced: return "synced"
+            case .syncing: return "syncing"
+            case .notSynced: return "not synced"
+            }
+        }
+
     }
 
     public enum NetworkType {
