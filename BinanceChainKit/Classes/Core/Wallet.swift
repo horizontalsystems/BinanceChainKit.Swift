@@ -1,6 +1,7 @@
 import Foundation
 import HSHDWalletKit
-import HSCryptoKit
+import OpenSslKit
+import Secp256k1Kit
 
 class Wallet {
 
@@ -21,8 +22,8 @@ class Wallet {
         self.segWitHelper = segWitHelper
 
         privateKey = try hdWallet.privateKey(path: Wallet.accountPrivateKeyPath).raw
-        publicKey = Data(CryptoKit.createPublicKey(fromPrivateKeyData: privateKey, compressed: true))
-        publicKeyHash = CryptoKit.ripemd160(CryptoKit.sha256(publicKey))
+        publicKey = Data(Kit.createPublicKey(fromPrivateKeyData: privateKey, compressed: true))
+        publicKeyHash = Kit.ripemd160(Kit.sha256(publicKey))
         address = try segWitHelper.encode(program: publicKeyHash)
     }
 
@@ -43,8 +44,8 @@ class Wallet {
     }
 
     func sign(message: Data) throws -> Data {
-        let hash = CryptoKit.sha256(message)
-        return try CryptoKit.compactSign(hash, privateKey: self.privateKey)
+        let hash = Kit.sha256(message)
+        return try Kit.compactSign(hash, privateKey: self.privateKey)
     }
 
 }

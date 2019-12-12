@@ -2,10 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:BinanceChainKit/BinanceChainKit.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:BinanceChainKitDemo/BinanceChainKitDemo.xcodeproj">
+      location = "group:BinanceChainKit.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">

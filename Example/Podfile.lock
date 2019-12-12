@@ -1,0 +1,55 @@
+PODS:
+  - Alamofire (4.9.1)
+  - BinanceChainKit.swift (0.2):
+    - Alamofire (~> 4.0)
+    - GRDB.swift (~> 4.0)
+    - HSHDWalletKit (~> 1.3)
+    - OpenSslKit.swift (~> 1.0)
+    - RxSwift (~> 5.0)
+    - Secp256k1Kit.swift (~> 1.0)
+    - SwiftProtobuf (~> 1.6)
+    - SwiftyJSON (~> 4.3)
+  - GRDB.swift (4.6.2):
+    - GRDB.swift/standard (= 4.6.2)
+  - GRDB.swift/standard (4.6.2)
+  - HSHDWalletKit (1.3):
+    - OpenSslKit.swift (~> 1.0)
+    - Secp256k1Kit.swift (~> 1.0)
+  - OpenSslKit.swift (1.0)
+  - RxSwift (5.0.1)
+  - Secp256k1Kit.swift (1.0)
+  - SwiftProtobuf (1.7.0)
+  - SwiftyJSON (4.3.0)
+
+DEPENDENCIES:
+  - BinanceChainKit.swift (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - GRDB.swift
+    - HSHDWalletKit
+    - OpenSslKit.swift
+    - RxSwift
+    - Secp256k1Kit.swift
+    - SwiftProtobuf
+    - SwiftyJSON
+
+EXTERNAL SOURCES:
+  BinanceChainKit.swift:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  BinanceChainKit.swift: b0994f0301e3f7c02cbe90dabe9fc1368f22bb3d
+  GRDB.swift: 258520e10b49ff55307cbb0bec701af0742ae621
+  HSHDWalletKit: 32f4be6c71cd986dcbdcd057d224638d0ff80445
+  OpenSslKit.swift: 6e699e0d69fae6b306eaca0b8971c59bc45546ab
+  RxSwift: e2dc62b366a3adf6a0be44ba9f405efd4c94e0c4
+  Secp256k1Kit.swift: 93b1bfbb8909c12605666cc3b1e59d1d1fde7322
+  SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
+  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
+
+PODFILE CHECKSUM: 2a5bf63343ae72af729e68f1efbca4fff887835c
+
+COCOAPODS: 1.8.4

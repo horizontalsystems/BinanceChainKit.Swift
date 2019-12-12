@@ -1,30 +1,34 @@
-Pod::Spec.new do |spec|
-  spec.name = 'BinanceChainKit.swift'
-  spec.module_name = 'BinanceChainKit'
-  spec.version = '0.1.1'
-  spec.summary = 'Binance blockchain library for Swift'
-  spec.description = <<-DESC
-                       BinanceChainKit.swift implements BinanceChain protocol in Swift.
-                       ```
-                    DESC
-  spec.homepage = 'https://github.com/horizontalsystems/binance-chain-kit-ios'
-  spec.license = { :type => 'Apache 2.0', :file => 'LICENSE' }
-  spec.author = { 'Horizontal Systems' => 'hsdao@protonmail.ch' }
-  spec.social_media_url = 'http://horizontalsystems.io/'
+Pod::Spec.new do |s|
+  s.name             = 'BinanceChainKit.swift'
+  s.module_name      = 'BinanceChainKit'
+  s.version          = '0.2'
+  s.summary          = 'Binance blockchain library for Swift.'
 
-  spec.requires_arc = true
-  spec.source = { git: 'https://github.com/horizontalsystems/binance-chain-kit-ios.git', tag: "#{spec.version}" }
-  spec.source_files = 'BinanceChainKit/BinanceChainKit/**/*.{h,m,swift}'
-  spec.ios.deployment_target = '12.0'
-  spec.swift_version = '5'
+  s.description      = <<-DESC
+BinanceChainKit.swift implements BinanceChain protocol in Swift.
+                       DESC
 
-  spec.dependency 'HSCryptoKit', '~> 1.5'
-  spec.dependency 'HSHDWalletKit', '~> 1.1'
+  s.homepage         = 'https://github.com/horizontalsystems/binance-chain-kit-ios'
+  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.author           = { 'Horizontal Systems' => 'hsdao@protonmail.ch' }
+  s.source           = { git: 'https://github.com/horizontalsystems/binance-chain-kit-ios.git', tag: "#{s.version}" }
+  s.social_media_url = 'http://horizontalsystems.io/'
 
-  spec.dependency 'RxSwift', '~> 5.0'
-  spec.dependency 'GRDB.swift', '~> 4.0'
-  spec.dependency 'Alamofire', '~> 4.0'
+  s.ios.deployment_target = '11.0'
+  s.swift_version = '5'
 
-  spec.dependency 'SwiftProtobuf', '~> 1.6'
-  spec.dependency 'SwiftyJSON', '~> 4.3'
+  s.source_files = 'BinanceChainKit/Classes/**/*'
+
+  s.requires_arc = true
+
+  s.dependency 'OpenSslKit.swift', '~> 1.0'
+  s.dependency 'Secp256k1Kit.swift', '~> 1.0'
+  s.dependency 'HSHDWalletKit', '~> 1.3'
+
+  s.dependency 'Alamofire', '~> 4.0'
+  s.dependency 'RxSwift', '~> 5.0'
+  s.dependency 'GRDB.swift', '~> 4.0'
+
+  s.dependency 'SwiftProtobuf', '~> 1.6'
+  s.dependency 'SwiftyJSON', '~> 4.3'
 end
