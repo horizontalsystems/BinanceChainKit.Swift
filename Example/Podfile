@@ -1,0 +1,10 @@
+platform :ios, '11'
+use_modular_headers!
+
+target 'BinanceChainKitExample' do
+  pod 'BinanceChainKit.swift', :path => '../'
+end
+
+target 'BinanceChainKitTests' do
+  pod 'BinanceChainKit.swift', :path => '../'
+end
