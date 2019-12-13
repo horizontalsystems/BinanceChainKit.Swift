@@ -1,6 +1,6 @@
 import UIKit
 import BinanceChainKit
-import HSHDWalletKit
+import HdWalletKit
 
 class LoginController: UIViewController {
 

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'BinanceChainKit.swift'
   s.module_name      = 'BinanceChainKit'
-  s.version          = '0.2'
+  s.version          = '0.3'
   s.summary          = 'Binance blockchain library for Swift.'
 
   s.description      = <<-DESC
@@ -23,7 +23,7 @@ BinanceChainKit.swift implements BinanceChain protocol in Swift.
 
   s.dependency 'OpenSslKit.swift', '~> 1.0'
   s.dependency 'Secp256k1Kit.swift', '~> 1.0'
-  s.dependency 'HSHDWalletKit', '~> 1.3'
+  s.dependency 'HdWalletKit.swift', '~> 1.4'
 
   s.dependency 'Alamofire', '~> 4.0'
   s.dependency 'RxSwift', '~> 5.0'

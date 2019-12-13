@@ -1,5 +1,5 @@
 import RxSwift
-import HSHDWalletKit
+import HdWalletKit
 
 public class BinanceChainKit {
     private let disposeBag = DisposeBag()
