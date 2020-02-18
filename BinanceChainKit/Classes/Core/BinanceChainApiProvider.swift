@@ -77,7 +77,7 @@ class BinanceChainApiProvider {
     }
 
     private func nodeInfo() -> Single<NodeInfo> {
-        return self.api(path: .nodeInfo, method: .get, parser: NodeInfoParser()).map { $0.nodeInfo }
+        self.api(path: .nodeInfo, method: .get, parser: NodeInfoParser()).map { $0.nodeInfo }
     }
 
     private func validators() {
@@ -302,7 +302,7 @@ class BinanceChainApiProvider {
 
     @discardableResult
     func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<BinanceChainApiProvider.Response> {
-        return self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser)
+        self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser)
     }
 
     func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<BinanceChainApiProvider.Response> {
@@ -315,7 +315,7 @@ class BinanceChainApiProvider {
 
         let single = Single<BinanceChainApiProvider.Response>.create { observer in
             let request = Alamofire.request(url, method: method, parameters: parameters, encoding: encoding)
-            request.validate(statusCode: 200..<499)
+            request.validate(statusCode: 200..<300)
             request.responseData(queue: DispatchQueue.global(qos: .background)) { (http) -> Void in
                 let response = BinanceChainApiProvider.Response()
 
@@ -338,7 +338,7 @@ class BinanceChainApiProvider {
                         try? ErrorParser().parse(response: response, data: data)
                     }
 
-                    observer(.error(error))
+                    observer(.error(response.error ?? error))
                 }
             }
 
@@ -355,22 +355,22 @@ class BinanceChainApiProvider {
 extension BinanceChainApiProvider: IApiProvider {
 
     func nodeInfoSingle() -> Single<NodeInfo> {
-        return nodeInfo()
+        nodeInfo()
     }
 
     func transactionsSingle(account: String, limit: Int, startTime: TimeInterval) -> Single<[Tx]> {
-        return transactions(address: account, limit: Limit(rawValue: limit), startTime: startTime, txType: .transfer).map { $0.tx }
+        transactions(address: account, limit: Limit(rawValue: limit), startTime: startTime, txType: .transfer).map { $0.tx }
     }
 
     func accountSingle(for address: String) -> Single<Account> {
-        return account(address: address)
+        account(address: address)
     }
 
     func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String> {
         let message = Message.transfer(symbol: symbol, amount: amount, to: to, memo: memo, wallet: wallet)
 
         return broadcast(message: message, sync: true).map { transactions in
-            self.logger?.debug("Transaction received in response: \(transactions)")
+            self.logger?.debug("Transaction received in response \(transactions.count): \(transactions)")
 
             guard let transaction = transactions.first else {
                 throw ApiError.noTransactionReturned
@@ -385,6 +385,6 @@ extension BinanceChainApiProvider: IApiProvider {
     }
 
     func blockHeightSingle(forTransaction hash: String) -> Single<Int> {
-        return tx(hash: hash).map { Int($0.height) ?? 0 }
+        tx(hash: hash).map { Int($0.height) ?? 0 }
     }
 }
