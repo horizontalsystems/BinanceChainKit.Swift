@@ -66,7 +66,7 @@ class SendController: UIViewController {
 
                     self?.showSuccess(address: address, amount: amount)
                 }, onError: { [weak self] error in
-                    self?.show(error: "Send failed: \(error)")
+                    self?.show(error: "Send failed: \(error) --- \(error.localizedDescription)")
                 })
                 .disposed(by: disposeBag)
     }
