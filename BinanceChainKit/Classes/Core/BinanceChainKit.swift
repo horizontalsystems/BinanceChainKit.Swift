@@ -260,4 +260,9 @@ extension BinanceChainKit {
         }
     }
 
+    public enum ApiError: Error {
+        case noTransactionReturned
+        case wrongTransaction
+    }
+
 }
