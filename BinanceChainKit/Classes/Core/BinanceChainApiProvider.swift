@@ -7,12 +7,6 @@ import RxSwift
 
 class BinanceChainApiProvider {
 
-    enum ApiError: Error {
-        case noTransactionReturned
-        case wrongTransaction
-        case apiError(message: String)
-    }
-
     internal enum Path: String {
         case time = "time"
         case nodeInfo = "node-info"
@@ -373,11 +367,11 @@ extension BinanceChainApiProvider: IApiProvider {
             self.logger?.debug("Transaction received in response \(transactions.count): \(transactions)")
 
             guard let transaction = transactions.first else {
-                throw ApiError.noTransactionReturned
+                throw BinanceChainKit.ApiError.noTransactionReturned
             }
 
             guard transaction.ok else {
-                throw ApiError.wrongTransaction
+                throw BinanceChainKit.ApiError.wrongTransaction
             }
 
             return transaction.hash
