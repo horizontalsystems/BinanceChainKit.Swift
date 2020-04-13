@@ -5,6 +5,7 @@ class Manager {
     static let shared = Manager()
 
     private let keyWords = "mnemonic_words"
+    private var walletId: String?
 
     var binanceChainKit: BinanceChainKit!
 
@@ -17,7 +18,10 @@ class Manager {
     }
 
     func login(words: [String]) throws {
-        try BinanceChainKit.clear(exceptFor: ["walletId"])
+        if let walletId = self.walletId {
+            try BinanceChainKit.clear(exceptFor: [walletId])
+        }
+
         try initBinanceChainKit(words: words)
         save(words: words)
     }
@@ -31,11 +35,12 @@ class Manager {
 
     private func initBinanceChainKit(words: [String]) throws {
         let configuration = Configuration.shared
+        walletId = NSUUID().uuidString
 
         let binanceChainKit = try BinanceChainKit.instance(
                 words: words,
                 networkType: configuration.networkType,
-                walletId: "walletId",
+                walletId: walletId!,
                 minLogLevel: configuration.minLogLevel
         )
 
