@@ -12,7 +12,7 @@ class AccountSyncer {
     }
 
     func sync(wallet: Wallet) -> Single<Void> {
-        return sync(account: wallet.address)
+        sync(account: wallet.address)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
                 .map({ nodeInfo, account in
                     wallet.accountNumber = account.accountNumber
@@ -22,10 +22,21 @@ class AccountSyncer {
     }
 
     func sync(account: String) -> Single<(NodeInfo, Account)> {
-        return Single.zip(
-                        apiProvider.nodeInfoSingle(),
-                        apiProvider.accountSingle(for: account)
-                )
+        Single.zip(
+                apiProvider.nodeInfoSingle(),
+                apiProvider.accountSingle(for: account).catchError { error in
+                    guard let binanceError = error as? BinanceError else {
+                        return Single.error(error)
+                    }
+
+                    if binanceError.code == 404 {
+                        // New account
+                        return Single.just(Account())
+                    }
+
+                    return Single.error(error)
+                }
+        )
     }
 
 }

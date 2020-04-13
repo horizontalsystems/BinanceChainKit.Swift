@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (4.9.1)
-  - BinanceChainKit.swift (0.3):
+  - BinanceChainKit.swift (0.3.1):
     - Alamofire (~> 4.0)
     - GRDB.swift (~> 4.0)
     - HdWalletKit.swift (~> 1.4)
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
-  BinanceChainKit.swift: c9ff25cd635d5487c7788a18a6a2545d8f1cf760
+  BinanceChainKit.swift: 93284bbe850c76963bc984b8b344b6bcdf5d87c1
   GRDB.swift: 258520e10b49ff55307cbb0bec701af0742ae621
   HdWalletKit.swift: 45af883b0aa722a56ed9a0de82121ba6c43cce3f
   OpenSslKit.swift: 6e699e0d69fae6b306eaca0b8971c59bc45546ab
