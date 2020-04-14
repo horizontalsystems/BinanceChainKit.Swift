@@ -28,7 +28,7 @@ class Parser {
         // Subclasses to override
     }
 
-    func parseError(_ json: JSON) -> Error {
+    func parseError(_ json: JSON) -> BinanceError {
         let code = json["code"].intValue
         let message = json["message"].stringValue
         if let nested = JSON(parseJSON: message)["message"].string {
@@ -345,7 +345,10 @@ class Parser {
 
 class ErrorParser: Parser {
     override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
-        response.error = self.parseError(json)
+        let binanceError = self.parseError(json)
+        binanceError.httpError = response.error
+
+        response.error = binanceError
     }
 }
 

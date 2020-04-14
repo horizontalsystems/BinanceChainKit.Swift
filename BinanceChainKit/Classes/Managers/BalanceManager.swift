@@ -27,6 +27,7 @@ class BalanceManager {
     func sync(account: String) {
         accountSyncer.sync(account: account)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+                .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
                 .subscribe(onSuccess: { [weak self] nodeInfo, account in
                     self?.handle(nodeInfo: nodeInfo, account: account)
                 }, onError: { [weak self] error in

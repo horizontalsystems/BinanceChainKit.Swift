@@ -341,7 +341,21 @@ class BinanceChainApiProvider {
             }
         }
 
-        return single
+        return single.retryWhen { errorObservable -> Observable<Error> in
+            errorObservable.flatMap { error -> Observable<Error> in
+                if let binanceError = error as? BinanceError,
+                   let httpError = binanceError.httpError as? Alamofire.AFError,
+                   case let .responseValidationFailed(reason) = httpError,
+                   case let .unacceptableStatusCode(code) = reason,
+                   code == 429 {  // (API Rates limit exceeded) HTTP Code: Too Many Requests
+                    return Observable<Int>
+                            .timer(1, scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
+                            .flatMap { _ -> Observable<Error> in Observable.just(error) }
+                }
+
+                return Observable.error(error)
+            }
+        }
     }
 
 }
