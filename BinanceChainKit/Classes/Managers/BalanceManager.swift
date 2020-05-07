@@ -18,11 +18,11 @@ class BalanceManager {
     }
 
     var latestBlock: LatestBlock? {
-        return storage.latestBlock
+        storage.latestBlock
     }
 
     func balance(symbol: String) -> Balance? {
-        return storage.balance(symbol: symbol)
+        storage.balance(symbol: symbol)
     }
 
     func sync(account: String) {

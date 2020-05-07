@@ -300,7 +300,7 @@ class BinanceChainApiProvider {
             encoding = HexEncoding(data: body)
         }
         let url = String(format: "%@/api/v1/%@", self.endpoint, path)
-        let request = networkManager.session.request(url, method: method, parameters: parameters, encoding: encoding, interceptor: self)
+        let request = networkManager.session.request(url, method: method, parameters: parameters, encoding: encoding, interceptor: RateLimitRetrier())
 
         return networkManager.single(request: request, mapper: parser)
     }
@@ -309,14 +309,28 @@ class BinanceChainApiProvider {
 
 extension BinanceChainApiProvider: RequestInterceptor {
 
-    public func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> ()) {
-        let error = NetworkManager.unwrap(error: error)
+    class RateLimitRetrier: RequestInterceptor {
+        private var attempt = 0
 
-        if let binanceError = error as? BinanceError, binanceError.httpStatus == 429 {
-            completion(.retryWithDelay(1))
-        } else {
-            completion(.doNotRetry)
+        func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> ()) {
+            let error = NetworkManager.unwrap(error: error)
+
+            if let binanceError = error as? BinanceError, binanceError.httpStatus == 429 {
+                completion(resolveResult())
+            } else {
+                completion(.doNotRetry)
+            }
         }
+
+        private func resolveResult() -> RetryResult {
+            attempt += 1
+
+            if attempt == 1 { return .retryWithDelay(3) }
+            if attempt == 2 { return .retryWithDelay(6) }
+
+            return .doNotRetry
+        }
+
     }
 
 }
