@@ -211,8 +211,7 @@ class Message {
             return try vote.serializedData()
 
         default:
-            throw BinanceError(message: "Invalid type")
-
+            throw BinanceError(code: 0, message: "Invalid type", httpStatus: nil)
         }
 
     }

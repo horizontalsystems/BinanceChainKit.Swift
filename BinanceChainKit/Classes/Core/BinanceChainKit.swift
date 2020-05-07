@@ -1,5 +1,6 @@
 import RxSwift
 import HdWalletKit
+import HsToolKit
 
 public class BinanceChainKit {
     private let disposeBag = DisposeBag()
@@ -32,7 +33,7 @@ public class BinanceChainKit {
     }
 
     public var binanceBalance: Decimal {
-        return balanceManager.balance(symbol: "BNB")?.amount ?? 0
+        balanceManager.balance(symbol: "BNB")?.amount ?? 0
     }
 
     init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, networkType: NetworkType, logger: Logger? = nil) {
@@ -46,16 +47,16 @@ public class BinanceChainKit {
 
         lastBlockHeight = balanceManager.latestBlock?.height
 
-        reachabilityManager.reachabilitySignal
+        reachabilityManager.reachabilityObservable
                 .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-                .subscribe(onNext: { [weak self] in
+                .subscribe(onNext: { [weak self] _ in
                     self?.refresh()
                 })
                 .disposed(by: disposeBag)
     }
 
     private func asset(symbol: String) -> Asset? {
-        return assets.first { $0.symbol == symbol }
+        assets.first { $0.symbol == symbol }
     }
 
 }
@@ -96,11 +97,11 @@ extension BinanceChainKit {
     }
 
     public var lastBlockHeightObservable: Observable<Int> {
-        return lastBlockHeightSubject.asObservable()
+        lastBlockHeightSubject.asObservable()
     }
 
     public var syncStateObservable: Observable<BinanceChainKit.SyncState> {
-        return syncStateSubject.asObservable()
+        syncStateSubject.asObservable()
     }
 
     public func validate(address: String) throws {
@@ -108,7 +109,7 @@ extension BinanceChainKit {
     }
 
     public func transactionsSingle(symbol: String, fromTransactionHash: String? = nil, limit: Int? = nil) -> Single<[TransactionInfo]> {
-        return transactionManager.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit).map {
+        transactionManager.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit).map {
             $0.map { transaction in TransactionInfo(transaction: transaction) }
         }
     }
@@ -184,7 +185,7 @@ extension BinanceChainKit {
         let segWitHelper = SegWitBech32(hrp: networkType.addressPrefix)
         let wallet = try Wallet(hdWallet: hdWallet, segWitHelper: segWitHelper)
 
-        let apiProvider = BinanceChainApiProvider(endpoint: networkType.endpoint, logger: logger)
+        let apiProvider = BinanceChainApiProvider(networkManager: NetworkManager(logger: logger), endpoint: networkType.endpoint)
 
         let accountSyncer = AccountSyncer(apiProvider: apiProvider, logger: logger)
         let balanceManager = BalanceManager(storage: storage, accountSyncer: accountSyncer, logger: logger)

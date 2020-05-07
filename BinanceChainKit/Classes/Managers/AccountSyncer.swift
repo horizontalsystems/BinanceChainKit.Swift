@@ -1,4 +1,5 @@
 import RxSwift
+import HsToolKit
 
 class AccountSyncer {
     private let apiProvider: IApiProvider

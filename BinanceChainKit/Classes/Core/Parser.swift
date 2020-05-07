@@ -1,7 +1,8 @@
 import Foundation
 import SwiftyJSON
+import HsToolKit
 
-class Parser {
+class Parser: IApiMapper {
 
     struct ParseError: Error, LocalizedError {
 
@@ -15,26 +16,34 @@ class Parser {
 
     }
 
-    func parse(response: BinanceChainApiProvider.Response, data: Data) throws {
-        guard let json = try? JSON(data: data) else {
-            guard let body = String(data: data, encoding: .utf8) else { throw ParseError() }
-            response.error = BinanceError(message: body)
-            return
+    func map(statusCode: Int, data: Any?) throws -> BinanceChainApiProvider.Response {
+        guard let jsonData = data else {
+            throw NetworkManager.RequestError.invalidResponse(statusCode: statusCode, data: data)
         }
-        try self.parse(json, response: response)
+
+        let jsonObject = JSON(jsonData)
+
+        guard 200 <= statusCode && statusCode < 300 else {
+            throw parseError(jsonObject, httpStatus: statusCode)
+        }
+
+        let response = BinanceChainApiProvider.Response()
+        try self.parse(jsonObject, response: response)
+
+        return response
     }
 
     func parse(_ json: JSON, response: BinanceChainApiProvider.Response) throws {
         // Subclasses to override
     }
 
-    func parseError(_ json: JSON) -> BinanceError {
+    func parseError(_ json: JSON, httpStatus: Int) -> BinanceError {
         let code = json["code"].intValue
         let message = json["message"].stringValue
         if let nested = JSON(parseJSON: message)["message"].string {
-            return BinanceError(code: code, message: nested)
+            return BinanceError(code: code, message: nested, httpStatus: httpStatus)
         }
-        return BinanceError(code: code, message: message)
+        return BinanceError(code: code, message: message, httpStatus: httpStatus)
     }
 
     // MARK: - API Responses
@@ -341,15 +350,6 @@ class Parser {
         return json["h"].intValue
     }
 
-}
-
-class ErrorParser: Parser {
-    override func parse(_ json: JSON, response: BinanceChainApiProvider.Response) {
-        let binanceError = self.parseError(json)
-        binanceError.httpError = response.error
-
-        response.error = binanceError
-    }
 }
 
 class TokenParser: Parser {

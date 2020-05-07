@@ -1,6 +1,6 @@
 import Foundation
+import HsToolKit
 import Alamofire
-import SwiftyJSON
 import RxSwift
 
 // https://binance-chain.github.io/api-reference/dex-api/paths.html
@@ -30,8 +30,6 @@ class BinanceChainApiProvider {
     }
 
     public class Response {
-        public var isError: Bool = false
-        public var error: Error?
         public var sequence: Int = 0
         public var blockHeight: Int = 0
         public var fees: [Fee] = []
@@ -57,12 +55,12 @@ class BinanceChainApiProvider {
         public var transactions: Transactions = Transactions()
     }
 
+    private let networkManager: NetworkManager
     private var endpoint: String
-    private var logger: Logger?
 
-    init(endpoint: String, logger: Logger? = nil) {
+    init(networkManager: NetworkManager, endpoint: String) {
+        self.networkManager = networkManager
         self.endpoint = endpoint
-        self.logger = logger
     }
 
 
@@ -137,9 +135,6 @@ class BinanceChainApiProvider {
             let bytes = try message.encode()
             return self.broadcast(message: bytes, sync: sync)
         } catch let error {
-            let response = Response()
-            response.isError = true
-            response.error = error
             return Single.error(error)
         }
 
@@ -305,56 +300,22 @@ class BinanceChainApiProvider {
             encoding = HexEncoding(data: body)
         }
         let url = String(format: "%@/api/v1/%@", self.endpoint, path)
-        logger?.debug("Sending Request. URL: \(url), method: \(method), parameters: \(parameters), bodyExists: \(body != nil)")
+        let request = networkManager.session.request(url, method: method, parameters: parameters, encoding: encoding, interceptor: self)
 
-        let single = Single<BinanceChainApiProvider.Response>.create { observer in
-            let request = Alamofire.request(url, method: method, parameters: parameters, encoding: encoding)
-            request.validate(statusCode: 200..<300)
-            request.responseData(queue: DispatchQueue.global(qos: .background)) { (http) -> Void in
-                let response = BinanceChainApiProvider.Response()
+        return networkManager.single(request: request, mapper: parser)
+    }
 
-                switch http.result {
-                case .success(let data):
+}
 
-                    do {
-                        try parser.parse(response: response, data: data)
-                        observer(.success(response))
-                    } catch {
-                        response.isError = true
-                        response.error = error
-                    }
+extension BinanceChainApiProvider: RequestInterceptor {
 
-                case .failure(let error):
+    public func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> ()) {
+        let error = NetworkManager.unwrap(error: error)
 
-                    response.isError = true
-                    response.error = error
-                    if let data = http.data {
-                        try? ErrorParser().parse(response: response, data: data)
-                    }
-
-                    observer(.error(response.error ?? error))
-                }
-            }
-
-            return Disposables.create {
-                request.cancel()
-            }
-        }
-
-        return single.retryWhen { errorObservable -> Observable<Error> in
-            errorObservable.flatMap { error -> Observable<Error> in
-                if let binanceError = error as? BinanceError,
-                   let httpError = binanceError.httpError as? Alamofire.AFError,
-                   case let .responseValidationFailed(reason) = httpError,
-                   case let .unacceptableStatusCode(code) = reason,
-                   code == 429 {  // (API Rates limit exceeded) HTTP Code: Too Many Requests
-                    return Observable<Int>
-                            .timer(1, scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-                            .flatMap { _ -> Observable<Error> in Observable.just(error) }
-                }
-
-                return Observable.error(error)
-            }
+        if let binanceError = error as? BinanceError, binanceError.httpStatus == 429 {
+            completion(.retryWithDelay(1))
+        } else {
+            completion(.doNotRetry)
         }
     }
 
@@ -378,8 +339,6 @@ extension BinanceChainApiProvider: IApiProvider {
         let message = Message.transfer(symbol: symbol, amount: amount, to: to, memo: memo, wallet: wallet)
 
         return broadcast(message: message, sync: true).map { transactions in
-            self.logger?.debug("Transaction received in response \(transactions.count): \(transactions)")
-
             guard let transaction = transactions.first else {
                 throw BinanceChainKit.ApiError.noTransactionReturned
             }
