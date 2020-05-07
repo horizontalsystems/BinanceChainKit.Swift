@@ -24,11 +24,6 @@ protocol IStorage {
     func transactionsSingle(symbol: String, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]>
 }
 
-protocol IReachabilityManager {
-    var isReachable: Bool { get }
-    var reachabilitySignal: Signal { get }
-}
-
 protocol IBalanceManagerDelegate: AnyObject {
     func didSync(balances: [Balance], latestBlockHeight: Int)
     func didFailToSync()

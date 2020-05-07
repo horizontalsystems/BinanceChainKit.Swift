@@ -1,4 +1,5 @@
 import BinanceChainKit
+import HsToolKit
 
 class Configuration {
     static let shared = Configuration()

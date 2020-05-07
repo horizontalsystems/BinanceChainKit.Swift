@@ -1,4 +1,5 @@
 import RxSwift
+import HsToolKit
 
 class TransactionManager {
     enum TransactionManagerError: Error {
@@ -72,7 +73,7 @@ class TransactionManager {
     }
 
     func sendSingle(account: String, symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
-        return accountSyncer.sync(wallet: wallet)
+        accountSyncer.sync(wallet: wallet)
                 .flatMap {
                     let amountDouble = Double(truncating: amount as NSNumber)
                     return self.apiProvider.sendSingle(symbol: symbol, to: to, amount: amountDouble, memo: memo, wallet: self.wallet)
