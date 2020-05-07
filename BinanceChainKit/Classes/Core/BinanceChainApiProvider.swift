@@ -325,8 +325,8 @@ extension BinanceChainApiProvider: RequestInterceptor {
         private func resolveResult() -> RetryResult {
             attempt += 1
 
-            if attempt == 1 { return .retryWithDelay(3) }
-            if attempt == 2 { return .retryWithDelay(6) }
+            if attempt == 1 { return .retryWithDelay(1) }
+            if attempt == 2 { return .retryWithDelay(3) }
 
             return .doNotRetry
         }
