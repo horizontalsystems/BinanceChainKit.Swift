@@ -12,7 +12,7 @@ class BalanceCell: UITableViewCell {
         switch adapter.syncState {
         case .synced: syncStateString = "Synced!"
         case .syncing: syncStateString = "Syncing"
-        case .notSynced: syncStateString = "Not Synced"
+        case .notSynced(let error): syncStateString = "Not Synced: \(error)"
         }
 
         nameLabel?.text = adapter.name

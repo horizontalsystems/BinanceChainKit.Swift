@@ -14,11 +14,11 @@ public class BinanceChainKit {
 
     public let account: String
     private let lastBlockHeightSubject = PublishSubject<Int>()
-    private let syncStateSubject = PublishSubject<BinanceChainKit.SyncState>()
+    private let syncStateSubject = PublishSubject<SyncState>()
 
     private var assets = [Asset]()
 
-    public var syncState: BinanceChainKit.SyncState = .notSynced {
+    public var syncState: SyncState = .notSynced(error: BinanceChainKit.SyncError.notStarted) {
         didSet {
             syncStateSubject.onNext(syncState)
         }
@@ -80,7 +80,7 @@ extension BinanceChainKit {
 
     public func refresh() {
         guard reachabilityManager.isReachable else {
-            syncState = .notSynced
+            syncState = .notSynced(error: ReachabilityManager.ReachabilityError.notReachable)
             return
         }
 
@@ -100,7 +100,7 @@ extension BinanceChainKit {
         lastBlockHeightSubject.asObservable()
     }
 
-    public var syncStateObservable: Observable<BinanceChainKit.SyncState> {
+    public var syncStateObservable: Observable<SyncState> {
         syncStateSubject.asObservable()
     }
 
@@ -155,8 +155,8 @@ extension BinanceChainKit: IBalanceManagerDelegate {
         syncState = .synced
     }
 
-    func didFailToSync() {
-        syncState = .notSynced
+    func didFailToSync(error: Error) {
+        syncState = .notSynced(error: error)
     }
 
 }
@@ -227,19 +227,28 @@ extension BinanceChainKit {
 
 extension BinanceChainKit {
 
-    public enum SyncState: CustomStringConvertible {
+    public enum SyncState: Equatable, CustomStringConvertible {
         case synced
         case syncing
-        case notSynced
+        case notSynced(error: Error)
+
+        public static func ==(lhs: SyncState, rhs: SyncState) -> Bool {
+            switch (lhs, rhs) {
+            case (.synced, .synced): return true
+            case (.syncing, .syncing): return true
+            case (.notSynced(let lhsError), .notSynced(let rhsError)): return "\(lhsError)" == "\(rhsError)"
+            default: return false
+            }
+        }
+
 
         public var description: String {
             switch self {
             case .synced: return "synced"
             case .syncing: return "syncing"
-            case .notSynced: return "not synced"
+            case .notSynced(let error): return "not synced: \(error)"
             }
         }
-
     }
 
     public enum NetworkType {
@@ -264,6 +273,10 @@ extension BinanceChainKit {
     public enum ApiError: Error {
         case noTransactionReturned
         case wrongTransaction
+    }
+
+    public enum SyncError: Error {
+        case notStarted
     }
 
 }

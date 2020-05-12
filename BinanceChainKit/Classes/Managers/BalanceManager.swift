@@ -33,7 +33,7 @@ class BalanceManager {
                     self?.handle(nodeInfo: nodeInfo, account: account)
                 }, onError: { [weak self] error in
                     self?.logger?.error("Failed to sync nodeInfo and account: \(error)")
-                    self?.delegate?.didFailToSync()
+                    self?.delegate?.didFailToSync(error: error)
                 })
                 .disposed(by: disposeBag)
     }
