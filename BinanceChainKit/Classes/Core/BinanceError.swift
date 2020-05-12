@@ -15,14 +15,10 @@ public class BinanceError: Error {
 
 }
 
-extension BinanceError: LocalizedError {
-    public var errorDescription: String? {
-        var str = "(\(code)"
+extension BinanceError: CustomStringConvertible {
 
-        if let status = httpStatus {
-            str += "|HTTP STATUS:\(status)"
-        }
-
-        return str + " \(message)"
+    public var description: String {
+        "(\(code)) \(message)"
     }
+
 }

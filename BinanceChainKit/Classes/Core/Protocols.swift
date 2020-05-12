@@ -26,7 +26,7 @@ protocol IStorage {
 
 protocol IBalanceManagerDelegate: AnyObject {
     func didSync(balances: [Balance], latestBlockHeight: Int)
-    func didFailToSync()
+    func didFailToSync(error: Error)
 }
 
 protocol ITransactionManagerDelegate: AnyObject {
