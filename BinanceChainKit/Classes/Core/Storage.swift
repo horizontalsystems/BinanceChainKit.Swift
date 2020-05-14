@@ -150,6 +150,12 @@ extension Storage: IStorage {
         }
     }
 
+    func transaction(symbol: String, hash: String) -> Transaction? {
+        try? dbPool.read { db in
+            try Transaction.filter(Transaction.Columns.symbol == symbol && Transaction.Columns.hash == hash).fetchOne(db)
+        }
+    }
+
 }
 
 extension Decimal: DatabaseValueConvertible {

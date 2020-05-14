@@ -92,4 +92,8 @@ extension BinanceChainAdapter {
         }
     }
 
+    func transaction(hash: String) -> TransactionRecord? {
+        binanceChainKit.transaction(symbol: asset.symbol, hash: hash).map { transactionRecord(fromTransaction: $0) }
+    }
+
 }

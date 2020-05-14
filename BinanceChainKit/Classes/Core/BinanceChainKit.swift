@@ -114,6 +114,10 @@ extension BinanceChainKit {
         }
     }
 
+    public func transaction(symbol: String, hash: String) -> TransactionInfo? {
+        transactionManager.transaction(symbol: symbol, hash: hash).map { TransactionInfo(transaction: $0) }
+    }
+
     public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
         logger?.debug("Sending \(amount) \(symbol) to \(to)")
 

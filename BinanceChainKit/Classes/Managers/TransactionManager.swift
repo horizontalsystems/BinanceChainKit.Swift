@@ -27,7 +27,11 @@ class TransactionManager {
     }
 
     func transactionsSingle(symbol: String, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]> {
-        return storage.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit)
+        storage.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit)
+    }
+
+    func transaction(symbol: String, hash: String) -> Transaction? {
+        storage.transaction(symbol: symbol, hash: hash)
     }
 
     func sync(account: String) {
