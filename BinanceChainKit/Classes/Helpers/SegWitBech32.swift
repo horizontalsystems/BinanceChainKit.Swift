@@ -40,7 +40,7 @@ class SegWitBech32 {
                 odata.append(UInt8((acc << (to - bits)) & maxv))
             }
         } else if (bits >= from || ((acc << (to - bits)) & maxv) != 0) {
-            throw CoderError.bitsConversionFailed
+            throw BinanceChainKit.CoderError.bitsConversionFailed
         }
         return odata
     }
@@ -50,14 +50,14 @@ class SegWitBech32 {
     public func decode(addr: String) throws -> Data {
         let dec = try bech32.decode(addr)
         guard dec.hrp == hrp else {
-            throw CoderError.hrpMismatch(dec.hrp, hrp)
+            throw BinanceChainKit.CoderError.hrpMismatch(dec.hrp, hrp)
         }
         guard dec.checksum.count >= 1 else {
-            throw CoderError.checksumSizeTooLow
+            throw BinanceChainKit.CoderError.checksumSizeTooLow
         }
         let conv = try convertBits(from: 5, to: 8, pad: false, idata: dec.checksum)
         guard conv.count >= 2 && conv.count <= 40 else {
-            throw CoderError.dataSizeMismatch(conv.count)
+            throw BinanceChainKit.CoderError.dataSizeMismatch(conv.count)
         }
         return conv
     }
@@ -69,33 +69,8 @@ class SegWitBech32 {
         enc.append(try convertBits(from: 8, to: 5, pad: true, idata: program))
         let result = bech32.encode(hrp, values: enc)
         guard let _ = try? decode(addr: result) else {
-            throw CoderError.encodingCheckFailed
+            throw BinanceChainKit.CoderError.encodingCheckFailed
         }
         return result
-    }
-}
-
-extension SegWitBech32 {
-    public enum CoderError: LocalizedError {
-        case bitsConversionFailed
-        case hrpMismatch(String, String)
-        case checksumSizeTooLow
-        case dataSizeMismatch(Int)
-        case encodingCheckFailed
-
-        public var errorDescription: String? {
-            switch self {
-            case .bitsConversionFailed:
-                return "Failed to perform bits conversion"
-            case .checksumSizeTooLow:
-                return "Checksum size is too low"
-            case .dataSizeMismatch(let size):
-                return "Program size \(size) does not meet required range 2...40"
-            case .encodingCheckFailed:
-                return "Failed to check result after encoding"
-            case .hrpMismatch(let got, let expected):
-                return "Human-readable-part \"\(got)\" does not match requested \"\(expected)\""
-            }
-        }
     }
 }

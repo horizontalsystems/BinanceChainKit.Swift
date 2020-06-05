@@ -283,4 +283,12 @@ extension BinanceChainKit {
         case notStarted
     }
 
+    public enum CoderError: Error {
+        case bitsConversionFailed
+        case hrpMismatch(String, String)
+        case checksumSizeTooLow
+        case dataSizeMismatch(Int)
+        case encodingCheckFailed
+    }
+
 }
