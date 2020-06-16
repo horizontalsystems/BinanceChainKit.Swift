@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (5.1.0)
+  - Alamofire (5.2.1)
   - BinanceChainKit.swift (0.3.3):
     - GRDB.swift (~> 4.0)
     - HdWalletKit.swift (~> 1.5)
@@ -19,11 +19,11 @@ PODS:
     - Alamofire (~> 5.0)
     - ObjectMapper (~> 3.0)
     - RxSwift (~> 5.0)
-  - ObjectMapper (3.5.2)
-  - OpenSslKit.swift (1.2)
+  - ObjectMapper (3.5.3)
+  - OpenSslKit.swift (1.2.1)
   - RxSwift (5.1.1)
   - Secp256k1Kit.swift (1.0)
-  - SwiftProtobuf (1.8.0)
+  - SwiftProtobuf (1.9.0)
   - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
@@ -50,20 +50,20 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   HsToolKit.swift:
-    :commit: b97c6224fee8d7b554a8e49e289ccdf131617dff
+    :commit: 2f4b640e92bf845a454cec3bbe74f68fdb402a8f
     :git: https://github.com/horizontalsystems/hs-tool-kit-ios
 
 SPEC CHECKSUMS:
-  Alamofire: 9d5c5f602928e512395b30950c5984eca840093c
+  Alamofire: e911732990610fe89af59ac0077f923d72dc3dfd
   BinanceChainKit.swift: dc4abba0d58f08ffd24e1030edd081ba2d1c8ec9
   GRDB.swift: 8cc3ab7c8b8b4ac1761deb8dca4b51c1c9d429f8
   HdWalletKit.swift: 4af4ef744a446904261971e5c31daf2eea8403c5
   HsToolKit.swift: b89273c4018e3b70894e820c88cee8b684be9305
-  ObjectMapper: b53ae947d370bf89423e86be7d4e2d2b2a8d3f40
-  OpenSslKit.swift: 168b059e3438c21994a3e9fe6c5648df96660d94
+  ObjectMapper: 97111c97e054a6ee25917662106689f0b4127b37
+  OpenSslKit.swift: 0f9c774a09e406c320a0c17341d84fced0e1ba16
   RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
   Secp256k1Kit.swift: 93b1bfbb8909c12605666cc3b1e59d1d1fde7322
-  SwiftProtobuf: 2cbd9409689b7df170d82a92a33443c8e3e14a70
+  SwiftProtobuf: ecbec1be9036d15655f6b3443a1c4ea693c97932
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
 PODFILE CHECKSUM: ab81b54b418d3ff7385cb8280ce4b1894ce770cb

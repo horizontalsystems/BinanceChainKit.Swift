@@ -300,7 +300,9 @@ class BinanceChainApiProvider {
             encoding = HexEncoding(data: body)
         }
         let url = String(format: "%@/api/v1/%@", self.endpoint, path)
-        let request = networkManager.session.request(url, method: method, parameters: parameters, encoding: encoding, interceptor: RateLimitRetrier())
+        let request = networkManager.session
+                .request(url, method: method, parameters: parameters, encoding: encoding, interceptor: RateLimitRetrier())
+                .cacheResponse(using: ResponseCacher(behavior: .doNotCache))
 
         return networkManager.single(request: request, mapper: parser)
     }
