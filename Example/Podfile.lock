@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (5.2.1)
+  - Alamofire (5.4.1)
   - BinanceChainKit.swift (0.3.4):
     - GRDB.swift (~> 4.0)
     - HdWalletKit.swift (~> 1.5)
@@ -12,18 +12,18 @@ PODS:
   - GRDB.swift (4.14.0):
     - GRDB.swift/standard (= 4.14.0)
   - GRDB.swift/standard (4.14.0)
-  - HdWalletKit.swift (1.5):
+  - HdWalletKit.swift (1.5.1):
     - OpenSslKit.swift (~> 1.0)
     - Secp256k1Kit.swift (~> 1.0)
-  - HsToolKit.swift (1.0):
+  - HsToolKit.swift (1.1.0):
     - Alamofire (~> 5.0)
     - ObjectMapper (~> 3.0)
     - RxSwift (~> 5.0)
   - ObjectMapper (3.5.3)
-  - OpenSslKit.swift (1.2.1)
+  - OpenSslKit.swift (1.2.2)
   - RxSwift (5.1.1)
-  - Secp256k1Kit.swift (1.0)
-  - SwiftProtobuf (1.9.0)
+  - Secp256k1Kit.swift (1.1)
+  - SwiftProtobuf (1.14.0)
   - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
@@ -50,22 +50,22 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   HsToolKit.swift:
-    :commit: 2f4b640e92bf845a454cec3bbe74f68fdb402a8f
+    :commit: 2f088bff0c737fb1c74e007ce85a9f1ea685cfc7
     :git: https://github.com/horizontalsystems/hs-tool-kit-ios
 
 SPEC CHECKSUMS:
-  Alamofire: e911732990610fe89af59ac0077f923d72dc3dfd
+  Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
   BinanceChainKit.swift: 8b0f9f257b15a13673dcfa89584dc990c77dbf08
   GRDB.swift: 8cc3ab7c8b8b4ac1761deb8dca4b51c1c9d429f8
-  HdWalletKit.swift: 4af4ef744a446904261971e5c31daf2eea8403c5
-  HsToolKit.swift: b89273c4018e3b70894e820c88cee8b684be9305
+  HdWalletKit.swift: 30b1ab08c736422eeefe346369ced89574e2ec00
+  HsToolKit.swift: d47ef3e8c507a6e980f2f6d819c5b0cf05845910
   ObjectMapper: 97111c97e054a6ee25917662106689f0b4127b37
-  OpenSslKit.swift: 0f9c774a09e406c320a0c17341d84fced0e1ba16
+  OpenSslKit.swift: 0e2194853fd9ce42006cf18c89743331406a10a9
   RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
-  Secp256k1Kit.swift: 93b1bfbb8909c12605666cc3b1e59d1d1fde7322
-  SwiftProtobuf: ecbec1be9036d15655f6b3443a1c4ea693c97932
+  Secp256k1Kit.swift: 322a66c4b3e95e96a397d73d45ad4d79af991bab
+  SwiftProtobuf: ed465ed18402f998fd117f631da27e0168e6b59c
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
 PODFILE CHECKSUM: ab81b54b418d3ff7385cb8280ce4b1894ce770cb
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.10.0

@@ -57,23 +57,23 @@ class ApiTransaction: CustomStringConvertible {
     var tx: Tx = Tx()
 }
 
-class Account: CustomStringConvertible {
-    var accountNumber: Int = 0
-    var address: String = ""
-    var balances: [ApiBalance] = []
-    var publicKey: Data = Data()
-    var sequence: Int = 0
+public class Account: CustomStringConvertible {
+    public var accountNumber: Int = 0
+    public var address: String = ""
+    public var balances: [ApiBalance] = []
+    public var publicKey: Data = Data()
+    public var sequence: Int = 0
 }
 
 class AccountSequence: CustomStringConvertible {
     var sequence: Int = 0
 }
 
-class ApiBalance: CustomStringConvertible {
-    var symbol: String = ""
-    var free: Double = 0
-    var locked: Double = 0
-    var frozen: Double = 0
+public class ApiBalance: CustomStringConvertible {
+    public var symbol: String = ""
+    public var free: Double = 0
+    public var locked: Double = 0
+    public var frozen: Double = 0
 }
 
 class Token: CustomStringConvertible {
