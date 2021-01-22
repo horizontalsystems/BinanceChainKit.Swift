@@ -185,9 +185,8 @@ extension BinanceChainKit {
         let uniqueId = "\(walletId)-\(networkType)"
         let storage: IStorage = try Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "binance-chain-\(uniqueId)")
 
-        let hdWallet = HDWallet(seed: Mnemonic.seed(mnemonic: words), coinType: 714, xPrivKey: 0, xPubKey: 0)
-        let segWitHelper = SegWitBech32(hrp: networkType.addressPrefix)
-        let wallet = try Wallet(hdWallet: hdWallet, segWitHelper: segWitHelper)
+        let segWitHelper = Self.segWitHelper(networkType: networkType)
+        let wallet = try Self.wallet(words: words, segWitHelper: segWitHelper)
 
         let apiProvider = BinanceChainApiProvider(networkManager: NetworkManager(logger: logger), endpoint: networkType.endpoint)
 
@@ -226,6 +225,14 @@ extension BinanceChainKit {
         return url
     }
 
+    private static func segWitHelper(networkType: NetworkType) -> SegWitBech32 {
+        SegWitBech32(hrp: networkType.addressPrefix)
+    }
+
+    private static func wallet(words: [String], segWitHelper: SegWitBech32) throws -> Wallet {
+        let hdWallet = HDWallet(seed: Mnemonic.seed(mnemonic: words), coinType: 714, xPrivKey: 0, xPubKey: 0)
+        return try Wallet(hdWallet: hdWallet, segWitHelper: segWitHelper)
+    }
 }
 
 
@@ -289,6 +296,26 @@ extension BinanceChainKit {
         case checksumSizeTooLow
         case dataSizeMismatch(Int)
         case encodingCheckFailed
+    }
+
+}
+
+extension BinanceChainKit {
+
+    public class BinanceAccountProvider {
+        private let segWitHelper: SegWitBech32
+        private let apiProvider: BinanceChainApiProvider
+
+        public init(networkType: NetworkType = .mainNet) {
+            segWitHelper = BinanceChainKit.segWitHelper(networkType: networkType)
+            apiProvider = BinanceChainApiProvider(networkManager: NetworkManager(), endpoint: networkType.endpoint)
+        }
+
+        public func accountSingle(words: [String]) throws -> Single<Account> {
+            let wallet = try BinanceChainKit.wallet(words: words, segWitHelper: segWitHelper)
+            return apiProvider.accountSingle(for: wallet.address)
+        }
+
     }
 
 }
