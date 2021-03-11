@@ -5,7 +5,9 @@ import Secp256k1Kit
 
 class Wallet {
 
-    static let accountPrivateKeyPath = "m/44'/714'/0'/0/0"
+    static let bcPrivateKeyPath = "m/44'/714'/0'/0/0"
+    static let bscMainNetKeyPath = "m/44'/60'/0'/0/0"
+    static let bscTestNetKeyPath = "m/44'/1'/0'/0/0"
 
     var sequence: Int = 0
     var accountNumber: Int = 0
@@ -14,17 +16,26 @@ class Wallet {
     let publicKey: Data
     let address: String
 
-    private let privateKey: Data
+    private let hdWallet: HDWallet
     private let publicKeyHash: Data
     private let segWitHelper: SegWitBech32
 
     init(hdWallet: HDWallet, segWitHelper: SegWitBech32) throws {
         self.segWitHelper = segWitHelper
+        self.hdWallet = hdWallet
 
-        privateKey = try hdWallet.privateKey(path: Wallet.accountPrivateKeyPath).raw
+        let privateKey = try hdWallet.privateKey(path: Wallet.bcPrivateKeyPath).raw
         publicKey = Data(Kit.createPublicKey(fromPrivateKeyData: privateKey, compressed: true))
         publicKeyHash = Kit.ripemd160(Kit.sha256(publicKey))
         address = try segWitHelper.encode(program: publicKeyHash)
+    }
+
+    func publicKeyHash(path: String) throws -> Data {
+        let privateKey = try hdWallet.privateKey(path: path).raw
+        let publicKey = Data(Secp256k1Kit.Kit.createPublicKey(fromPrivateKeyData: privateKey, compressed: false).dropFirst())
+        let sha3Hash = OpenSslKit.Kit.sha3(publicKey)
+
+        return Data(sha3Hash.suffix(20))
     }
 
     func incrementSequence() {
@@ -32,20 +43,20 @@ class Wallet {
     }
 
     func nextAvailableOrderId() -> String {
-        return String(format: "%@-%d", self.publicKeyHashHex.uppercased(), self.sequence + 1)
+        String(format: "%@-%d", publicKeyHashHex.uppercased(), sequence + 1)
     }
 
     var publicKeyHashHex: String {
-        return publicKeyHash.hexlify
+        publicKeyHash.hexlify
     }
 
-    func publicKeyHash(from address: String) throws -> Data {
-        return try segWitHelper.decode(addr: address)
+    func publicKeyHash(fromAddress address: String) throws -> Data {
+        try segWitHelper.decode(addr: address)
     }
 
     func sign(message: Data) throws -> Data {
         let hash = Kit.sha256(message)
-        return try Kit.compactSign(hash, privateKey: self.privateKey)
+        return try Kit.compactSign(hash, privateKey: try hdWallet.privateKey(path: Wallet.bcPrivateKeyPath).raw)
     }
 
 }
@@ -53,7 +64,7 @@ class Wallet {
 extension Wallet : CustomStringConvertible {
 
     var description: String {
-        return String(format: "Wallet [address=%@ accountNumber=%d, sequence=%d, chain_id=%@, account=%@, publicKey=%@]",
+        String(format: "Wallet [address=%@ accountNumber=%d, sequence=%d, chain_id=%@, account=%@, publicKey=%@]",
                 address, accountNumber, sequence, chainId, address, publicKey.hexlify)
     }
 

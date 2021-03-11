@@ -252,6 +252,17 @@ struct Vote {
     init() {}
 }
 
+struct TransferOut {
+
+    var from: Data = SwiftProtobuf.Internal.emptyData
+    var to: Data = SwiftProtobuf.Internal.emptyData
+    var amount: Send.Token = Send.Token()
+    var expireTime: Int64 = 0
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 extension StdTx: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -743,6 +754,54 @@ extension Vote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase,
         if lhs.proposalID != rhs.proposalID {return false}
         if lhs.voter != rhs.voter {return false}
         if lhs.option != rhs.option {return false}
+        if lhs.unknownFields != rhs.unknownFields {return false}
+        return true
+    }
+}
+
+extension TransferOut: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+    static let protoMessageName: String = "TransferOut"
+    static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+        1: .same(proto: "from"),
+        2: .same(proto: "to"),
+        3: .same(proto: "amount"),
+        4: .standard(proto: "expire_time"),
+    ]
+
+    mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+        while let fieldNumber = try decoder.nextFieldNumber() {
+            switch fieldNumber {
+            case 1: try decoder.decodeSingularBytesField(value: &from)
+            case 2: try decoder.decodeSingularBytesField(value: &to)
+            case 3:
+                var amount: Send.Token? = nil
+                try decoder.decodeSingularMessageField(value: &amount)
+                amount.flatMap { self.amount = $0 }
+            case 4: try decoder.decodeSingularInt64Field(value: &expireTime)
+            default: break
+            }
+        }
+    }
+
+    func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+        if !from.isEmpty {
+            try visitor.visitSingularBytesField(value: from, fieldNumber: 1)
+        }
+        if !to.isEmpty {
+            try visitor.visitSingularBytesField(value: to, fieldNumber: 2)
+        }
+        try visitor.visitSingularMessageField(value: amount, fieldNumber: 3)
+        if expireTime != 0 {
+            try visitor.visitSingularInt64Field(value: expireTime, fieldNumber: 4)
+        }
+        try unknownFields.traverse(visitor: &visitor)
+    }
+
+    static func ==(lhs: TransferOut, rhs: TransferOut) -> Bool {
+        if lhs.from != rhs.from {return false}
+        if lhs.to != rhs.to {return false}
+        if lhs.amount != rhs.amount {return false}
+        if lhs.expireTime != rhs.expireTime {return false}
         if lhs.unknownFields != rhs.unknownFields {return false}
         return true
     }

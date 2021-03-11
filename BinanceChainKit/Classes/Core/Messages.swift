@@ -9,6 +9,7 @@ class Message {
         case freeze = "E774B32D"
         case unfreeze = "6515FF0D"
         case transfer = "2A2C87FA"
+        case transferOut = "800819C0"
         case vote = "A1CADD36"
         case stdtx = "F0625DEE"
         case signature = ""
@@ -33,6 +34,8 @@ class Message {
     private var data: Data = Data()
     private var memo: String = ""
     private var toAddress: String = ""
+    private var bscPublicKeyHash: Data = Data()
+    private var expireTime: Int64 = 0
     private var proposalId: Int = 0
     private var voteOption: VoteOption = .no
     private var source: Source = .broadcast
@@ -83,6 +86,15 @@ class Message {
         message.amount = amount
         message.toAddress = address
         message.memo = memo
+        return message
+    }
+
+    static func transferOut(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) -> Message {
+        let message = Message(type: .transferOut, wallet: wallet)
+        message.symbol = symbol
+        message.amount = amount
+        message.bscPublicKeyHash = bscPublicKeyHash
+        message.expireTime = expireTime
         return message
     }
 
@@ -178,7 +190,7 @@ class Message {
             input.coins = [token]
 
             var output = Send.Output()
-            output.address = try self.wallet.publicKeyHash(from: self.toAddress)
+            output.address = try self.wallet.publicKeyHash(fromAddress: self.toAddress)
             output.coins = [token]
 
             var send = Send()
@@ -186,6 +198,19 @@ class Message {
             send.outputs.append(output)
 
             return try send.serializedData()
+
+        case .transferOut:
+            var token = Send.Token()
+            token.denom = symbol
+            token.amount = Int64(amount.encoded)
+
+            var transferOut = TransferOut()
+            transferOut.from = wallet.publicKeyHashHex.unhexlify
+            transferOut.to = bscPublicKeyHash
+            transferOut.amount = token
+            transferOut.expireTime = expireTime
+
+            return try transferOut.serializedData()
 
         case .signature:
             var pb = StdSignature()
@@ -264,6 +289,15 @@ class Message {
                     self.amount.encoded,
                     self.symbol)
 
+        case .transferOut:
+            return String(
+                    format: JSON.transferOut,
+                    amount.encoded,
+                    symbol,
+                    expireTime,
+                    wallet.address,
+                    EIP55.format(address: bscPublicKeyHash))
+
         case .vote:
             return String(format: JSON.vote,
                     self.voteOption.rawValue,
@@ -323,6 +357,10 @@ fileprivate class JSON {
     static let transfer = """
                           {"inputs":[{"address":"%@","coins":[{"amount":%ld,"denom":"%@"}]}],"outputs":[{"address":"%@","coins":[{"amount":%ld,"denom":"%@"}]}]}
                           """
+
+    static let transferOut = """
+                             {"amount":{"amount":%ld,"denom":"%@"},"expire_time":%d,"from":"%@","to":"%@"}
+                             """
 
     static let vote = """
                       {"option":%d,proposal_id":%d,voter":"%@"}
