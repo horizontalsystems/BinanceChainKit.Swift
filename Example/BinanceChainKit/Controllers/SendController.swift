@@ -49,7 +49,7 @@ class SendController: UIViewController {
             return
         }
 
-        guard let amountString = amountTextField?.text, let amount = Decimal(string: amountString) else {
+        guard let amountString = amountTextField?.text, let amount = Decimal(string: amountString, locale: .current) else {
             show(error: "Invalid amount")
             return
         }

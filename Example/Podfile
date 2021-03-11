@@ -4,6 +4,7 @@ use_modular_headers!
 target 'BinanceChainKitExample' do
   pod 'HsToolKit.swift', git: 'https://github.com/horizontalsystems/hs-tool-kit-ios'
   pod 'BinanceChainKit.swift', :path => '../'
+  pod 'SnapKit'
 end
 
 target 'BinanceChainKitTests' do

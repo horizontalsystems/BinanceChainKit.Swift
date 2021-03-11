@@ -23,12 +23,14 @@ PODS:
   - OpenSslKit.swift (1.2.2)
   - RxSwift (5.1.1)
   - Secp256k1Kit.swift (1.1)
+  - SnapKit (5.0.1)
   - SwiftProtobuf (1.14.0)
   - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
   - BinanceChainKit.swift (from `../`)
   - HsToolKit.swift (from `https://github.com/horizontalsystems/hs-tool-kit-ios`)
+  - SnapKit
 
 SPEC REPOS:
   trunk:
@@ -39,6 +41,7 @@ SPEC REPOS:
     - OpenSslKit.swift
     - RxSwift
     - Secp256k1Kit.swift
+    - SnapKit
     - SwiftProtobuf
     - SwiftyJSON
 
@@ -63,9 +66,10 @@ SPEC CHECKSUMS:
   OpenSslKit.swift: 0e2194853fd9ce42006cf18c89743331406a10a9
   RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
   Secp256k1Kit.swift: 322a66c4b3e95e96a397d73d45ad4d79af991bab
+  SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SwiftProtobuf: ed465ed18402f998fd117f631da27e0168e6b59c
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: ab81b54b418d3ff7385cb8280ce4b1894ce770cb
+PODFILE CHECKSUM: d64727a03a322829f751d866a4958fbe385a0702
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

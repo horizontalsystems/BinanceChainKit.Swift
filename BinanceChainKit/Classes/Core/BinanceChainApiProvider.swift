@@ -287,6 +287,20 @@ class BinanceChainApiProvider {
         return self.api(path: .transactions, method: .get, parameters: parameters, parser: TransactionsParser()).map { $0.transactions }
     }
 
+    private func broadcastSingle(message: Message) -> Single<String> {
+        broadcast(message: message, sync: true).map { transactions in
+            guard let transaction = transactions.first else {
+                throw BinanceChainKit.ApiError.noTransactionReturned
+            }
+
+            guard transaction.ok else {
+                throw BinanceChainKit.ApiError.wrongTransaction
+            }
+
+            return transaction.hash
+        }
+    }
+
     // MARK: - Utils
 
     @discardableResult
@@ -354,17 +368,13 @@ extension BinanceChainApiProvider: IApiProvider {
     func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String> {
         let message = Message.transfer(symbol: symbol, amount: amount, to: to, memo: memo, wallet: wallet)
 
-        return broadcast(message: message, sync: true).map { transactions in
-            guard let transaction = transactions.first else {
-                throw BinanceChainKit.ApiError.noTransactionReturned
-            }
+        return broadcastSingle(message: message)
+    }
 
-            guard transaction.ok else {
-                throw BinanceChainKit.ApiError.wrongTransaction
-            }
+    func transferOutSingle(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) -> Single<String> {
+        let message = Message.transferOut(symbol: symbol, bscPublicKeyHash: bscPublicKeyHash, amount: amount, expireTime: expireTime, wallet: wallet)
 
-            return transaction.hash
-        }
+        return broadcastSingle(message: message)
     }
 
     func blockHeightSingle(forTransaction hash: String) -> Single<Int> {

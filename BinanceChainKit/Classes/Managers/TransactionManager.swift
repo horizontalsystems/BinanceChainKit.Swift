@@ -34,11 +34,11 @@ class TransactionManager {
         storage.transaction(symbol: symbol, hash: hash)
     }
 
-    func sync(account: String) {
+    func sync() {
         let syncedUntilTime = storage.syncState?.transactionSyncedUntilTime ?? binanceLaunchTime
         logger?.debug("Syncing transactions starting from \(syncedUntilTime)")
 
-        syncTransactionsPartially(account: account, startTime: syncedUntilTime.timeIntervalSince1970)
+        syncTransactionsPartially(startTime: syncedUntilTime.timeIntervalSince1970)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
                 .subscribe(onSuccess: {}, onError: { [weak self] error in
                     self?.logger?.error("TransactionManager sync failure: \(error.localizedDescription)")
@@ -46,8 +46,8 @@ class TransactionManager {
                 .disposed(by: disposeBag)
     }
 
-    private func syncTransactionsPartially(account: String, startTime: TimeInterval) -> Single<Void> {
-        return apiProvider.transactionsSingle(account: account, limit: 1000, startTime: startTime)
+    private func syncTransactionsPartially(startTime: TimeInterval) -> Single<Void> {
+        apiProvider.transactionsSingle(account: wallet.address, limit: 1000, startTime: startTime)
                 .flatMap { txs in
                     self.logger?.debug("\(txs.count) transactions received: [\(txs.map { $0.txHash }.joined(separator: ", "))]")
 
@@ -69,18 +69,26 @@ class TransactionManager {
                     }
 
                     if (syncedUntil < currentTime) {
-                        return self.syncTransactionsPartially(account: account, startTime: syncedUntil)
+                        return self.syncTransactionsPartially(startTime: syncedUntil)
                     } else {
                         return Single.just(())
                     }
                 }
     }
 
-    func sendSingle(account: String, symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
+    func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
         accountSyncer.sync(wallet: wallet)
                 .flatMap {
                     let amountDouble = Double(truncating: amount as NSNumber)
                     return self.apiProvider.sendSingle(symbol: symbol, to: to, amount: amountDouble, memo: memo, wallet: self.wallet)
+                }
+    }
+
+    func moveToBscSingle(symbol: String, bscPublicKeyHash: Data, amount: Decimal) -> Single<String> {
+        accountSyncer.sync(wallet: wallet)
+                .flatMap {
+                    let amountDouble = Double(truncating: amount as NSNumber)
+                    return self.apiProvider.transferOutSingle(symbol: symbol, bscPublicKeyHash: bscPublicKeyHash, amount: amountDouble, expireTime: Int64(Date().timeIntervalSince1970 + 600), wallet: self.wallet)
                 }
     }
 

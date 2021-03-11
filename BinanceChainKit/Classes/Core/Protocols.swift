@@ -5,6 +5,7 @@ protocol IApiProvider {
     func transactionsSingle(account: String, limit: Int, startTime: TimeInterval) -> Single<[Tx]>
     func accountSingle(for: String) -> Single<Account>
     func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String>
+    func transferOutSingle(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) -> Single<String>
     func blockHeightSingle(forTransaction: String) -> Single<Int>
 }
 

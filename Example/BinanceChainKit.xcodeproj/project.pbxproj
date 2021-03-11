@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2FA5D19DA966C914D01E9489 /* MoveToBscController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA5D4C7FE10EE31659E5E44 /* MoveToBscController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		6414E98E1ADF2C019812FAFA /* libPods-BinanceChainKitExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E8B5F4DA7915C302037A970B /* libPods-BinanceChainKitExample.a */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2FA5D4C7FE10EE31659E5E44 /* MoveToBscController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveToBscController.swift; sourceTree = "<group>"; };
 		3F09A6CAE90457E0258E43DD /* BinanceChainKit.swift.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.podspec; name = BinanceChainKit.swift.podspec; path = ../BinanceChainKit.swift.podspec; sourceTree = "<group>"; };
 		4183767EF722E149B7701AF4 /* Pods-BinanceChainKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinanceChainKit_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BinanceChainKit_Tests/Pods-BinanceChainKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* BinanceChainKitExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinanceChainKitExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -205,6 +207,7 @@
 				D36AAB1E23A257B60065B32B /* TransactionsController.swift */,
 				D36AAB1F23A257B60065B32B /* SendController.swift */,
 				D36AAB2023A257B60065B32B /* ReceiveController.xib */,
+				2FA5D4C7FE10EE31659E5E44 /* MoveToBscController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -419,6 +422,7 @@
 				D36AAB3023A257B60065B32B /* ReceiveController.swift in Sources */,
 				D36AAB2E23A257B60065B32B /* BalanceCell.swift in Sources */,
 				D36AAB2D23A257B60065B32B /* TransactionCell.swift in Sources */,
+				2FA5D19DA966C914D01E9489 /* MoveToBscController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

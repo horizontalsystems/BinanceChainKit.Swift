@@ -38,6 +38,10 @@ class BinanceChainAdapter {
         )
     }
 
+    func moveToBSC(symbol: String, amount: Decimal) -> Single<String> {
+        binanceChainKit.moveToBSCSingle(symbol: symbol, amount: amount)
+    }
+
 }
 
 extension BinanceChainAdapter {

@@ -17,11 +17,17 @@ class MainController: UITabBarController {
         sendNavigation.tabBarItem.title = "Send"
         sendNavigation.tabBarItem.image = UIImage(named: "Send Tab Bar Icon")
 
+        let moveNavigation = UINavigationController(rootViewController: MoveToBscController())
+        moveNavigation.tabBarItem.title = "Move to BSC"
+        if #available(iOS 13.0, *) {
+            moveNavigation.tabBarItem.image = UIImage(systemName: "arrow.right")
+        }
+
         let receiveNavigation = UINavigationController(rootViewController: ReceiveController())
         receiveNavigation.tabBarItem.title = "Receive"
         receiveNavigation.tabBarItem.image = UIImage(named: "Receive Tab Bar Icon")
 
-        viewControllers = [balanceNavigation, transactionsNavigation, sendNavigation, receiveNavigation]
+        viewControllers = [balanceNavigation, transactionsNavigation, sendNavigation, moveNavigation, receiveNavigation]
     }
 
 }

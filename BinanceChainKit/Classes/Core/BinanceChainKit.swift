@@ -12,7 +12,7 @@ public class BinanceChainKit {
     private let networkType: NetworkType
     private let logger: Logger?
 
-    public let account: String
+    private let wallet: Wallet
     private let lastBlockHeightSubject = PublishSubject<Int>()
     private let syncStateSubject = PublishSubject<SyncState>()
 
@@ -36,8 +36,12 @@ public class BinanceChainKit {
         balanceManager.balance(symbol: "BNB")?.amount ?? 0
     }
 
-    init(account: String, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, networkType: NetworkType, logger: Logger? = nil) {
-        self.account = account
+    public var account: String {
+        wallet.address
+    }
+
+    init(wallet: Wallet, balanceManager: BalanceManager, transactionManager: TransactionManager, reachabilityManager: ReachabilityManager, segWitHelper: SegWitBech32, networkType: NetworkType, logger: Logger? = nil) {
+        self.wallet = wallet
         self.balanceManager = balanceManager
         self.transactionManager = transactionManager
         self.reachabilityManager = reachabilityManager
@@ -57,6 +61,18 @@ public class BinanceChainKit {
 
     private func asset(symbol: String) -> Asset? {
         assets.first { $0.symbol == symbol }
+    }
+
+    private func watchOnChain(transaction hash: String) {
+        transactionManager.blockHeightSingle(forTransaction: hash)
+                .subscribe(
+                        onSuccess: { [weak self] blockHeight in
+                            self?.refresh()
+                        }, onError: { [weak self] error in
+                            self?.logger?.error("Transaction send error: \(error)")
+                        }
+                )
+                .disposed(by: disposeBag)
     }
 
 }
@@ -92,8 +108,8 @@ extension BinanceChainKit {
         logger?.debug("Syncing")
         syncState = .syncing
 
-        balanceManager.sync(account: account)
-        transactionManager.sync(account: account)
+        balanceManager.sync(account: wallet.address)
+        transactionManager.sync()
     }
 
     public var lastBlockHeightObservable: Observable<Int> {
@@ -121,19 +137,25 @@ extension BinanceChainKit {
     public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
         logger?.debug("Sending \(amount) \(symbol) to \(to)")
 
-        return transactionManager.sendSingle(account: account, symbol: symbol, to: to, amount: amount, memo: memo)
+        return transactionManager.sendSingle(symbol: symbol, to: to, amount: amount, memo: memo)
                 .do(onSuccess: { [weak self] hash in
-                    guard let kit = self else {
-                        return
-                    }
+                    self?.watchOnChain(transaction: hash)
+                })
+    }
 
-                    kit.transactionManager.blockHeightSingle(forTransaction: hash).subscribe(
-                            onSuccess: { blockHeight in
-                                kit.refresh()
-                            }, onError: { error in
-                                kit.logger?.error("Transaction send error: \(error)")
-                            })
-                            .disposed(by: kit.disposeBag)
+    public func moveToBSCSingle(symbol: String, amount: Decimal) -> Single<String> {
+        logger?.debug("Moving \(amount) \(symbol) to BSC")
+
+        let bscPublicKeyHash: Data
+        do {
+            bscPublicKeyHash = try wallet.publicKeyHash(path: networkType == .mainNet ? Wallet.bscMainNetKeyPath : Wallet.bscTestNetKeyPath)
+        } catch {
+            return Single.error(error)
+        }
+
+        return transactionManager.moveToBscSingle(symbol: symbol, bscPublicKeyHash: bscPublicKeyHash, amount: amount)
+                .do(onSuccess: { [weak self] hash in
+                    self?.watchOnChain(transaction: hash)
                 })
     }
 
@@ -195,7 +217,7 @@ extension BinanceChainKit {
         let transactionManager = TransactionManager(storage: storage, wallet: wallet, apiProvider: apiProvider, accountSyncer: accountSyncer, logger: logger)
         let reachabilityManager = ReachabilityManager()
 
-        let binanceChainKit = BinanceChainKit(account: wallet.address, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, segWitHelper: segWitHelper, networkType: networkType, logger: logger)
+        let binanceChainKit = BinanceChainKit(wallet: wallet, balanceManager: balanceManager, transactionManager: transactionManager, reachabilityManager: reachabilityManager, segWitHelper: segWitHelper, networkType: networkType, logger: logger)
         balanceManager.delegate = binanceChainKit
         transactionManager.delegate = binanceChainKit
 
