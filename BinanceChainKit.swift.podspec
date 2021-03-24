@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'BinanceChainKit.swift'
   s.module_name      = 'BinanceChainKit'
-  s.version          = '0.3.5'
+  s.version          = '0.3.6'
   s.summary          = 'Binance blockchain library for Swift.'
 
   s.description      = <<-DESC
