@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Current Version
 
+* Increase minimum iOS version to 13.0 [ **non-back-compatible api change** ]
+
 ## 0.3.6
 
 * Add ability to move assets to BSC chain
