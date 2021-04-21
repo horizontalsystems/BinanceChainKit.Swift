@@ -1,5 +1,6 @@
 import RxSwift
 import BinanceChainKit
+import HdWalletKit
 
 class Manager {
     static let shared = Manager()
@@ -37,8 +38,9 @@ class Manager {
         let configuration = Configuration.shared
         walletId = NSUUID().uuidString
 
+        let seed = Mnemonic.seed(mnemonic: words)
         let binanceChainKit = try BinanceChainKit.instance(
-                words: words,
+                seed: seed,
                 networkType: configuration.networkType,
                 walletId: walletId!,
                 minLogLevel: configuration.minLogLevel
