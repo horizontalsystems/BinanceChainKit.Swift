@@ -27,7 +27,7 @@ BinanceChainKit.swift implements BinanceChain protocol in Swift.
 
   s.dependency 'HsToolKit.swift', '~> 1.0'
   s.dependency 'RxSwift', '~> 5.0'
-  s.dependency 'GRDB.swift', '~> 4.0'
+  s.dependency 'GRDB.swift', '~> 5.0'
 
   s.dependency 'SwiftProtobuf', '~> 1.6'
   s.dependency 'SwiftyJSON', '~> 4.3'
