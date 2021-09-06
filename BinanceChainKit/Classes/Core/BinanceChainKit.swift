@@ -83,7 +83,7 @@ extension BinanceChainKit {
 
     public func register(symbol: String) -> Asset {
         let balance = balanceManager.balance(symbol: symbol)?.amount ?? 0
-        let asset = Asset(symbol: symbol, balance: balance)
+        let asset = Asset(symbol: symbol, balance: balance, address: wallet.address)
 
         assets.append(asset)
 
@@ -124,8 +124,8 @@ extension BinanceChainKit {
         try _ = segWitHelper.decode(addr: address)
     }
 
-    public func transactionsSingle(symbol: String, fromTransactionHash: String? = nil, limit: Int? = nil) -> Single<[TransactionInfo]> {
-        transactionManager.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit).map {
+    public func transactionsSingle(symbol: String, filterType: TransactionFilterType? = nil, fromTransactionHash: String? = nil, limit: Int? = nil) -> Single<[TransactionInfo]> {
+        transactionManager.transactionsSingle(symbol: symbol, filterType: filterType, fromTransactionHash: fromTransactionHash, limit: limit).map {
             $0.map { transaction in TransactionInfo(transaction: transaction) }
         }
     }

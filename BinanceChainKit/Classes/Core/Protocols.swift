@@ -22,7 +22,7 @@ protocol IStorage {
     func save(balances: [Balance])
     func save(transactions: [Transaction])
 
-    func transactionsSingle(symbol: String, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]>
+    func transactionsSingle(symbol: String, fromAddress: String?, toAddress: String?, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]>
     func transaction(symbol: String, hash: String) -> Transaction?
 }
 
