@@ -127,10 +127,18 @@ extension Storage: IStorage {
         }
     }
 
-    func transactionsSingle(symbol: String, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]> {
-        return Single.create { [weak self] observer in
+    func transactionsSingle(symbol: String, fromAddress: String?, toAddress: String?, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]> {
+        Single.create { [weak self] observer in
             try? self?.dbPool.read { db in
                 var request = Transaction.filter(Transaction.Columns.symbol == symbol)
+
+                if let fromAddress = fromAddress {
+                    request = request.filter(Transaction.Columns.from == fromAddress)
+                }
+
+                if let toAddress = toAddress {
+                    request = request.filter(Transaction.Columns.to == toAddress)
+                }
 
                 if let transactionHash = fromTransactionHash,
                    let transaction = try Transaction.filter(Transaction.Columns.hash == transactionHash).fetchOne(db) {

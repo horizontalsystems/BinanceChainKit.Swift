@@ -26,8 +26,17 @@ class TransactionManager {
         self.logger = logger
     }
 
-    func transactionsSingle(symbol: String, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]> {
-        storage.transactionsSingle(symbol: symbol, fromTransactionHash: fromTransactionHash, limit: limit)
+    func transactionsSingle(symbol: String, filterType: TransactionFilterType?, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]> {
+        var fromAddress: String? = nil
+        var toAddress: String? = nil
+
+        switch filterType {
+        case .incoming: toAddress = wallet.address
+        case .outgoing: fromAddress = wallet.address
+        case nil: ()
+        }
+        
+        return storage.transactionsSingle(symbol: symbol, fromAddress: fromAddress, toAddress: toAddress, fromTransactionHash: fromTransactionHash, limit: limit)
     }
 
     func transaction(symbol: String, hash: String) -> Transaction? {
