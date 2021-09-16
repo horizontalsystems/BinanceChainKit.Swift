@@ -9,7 +9,7 @@ public class BinanceChainKit {
     private let transactionManager: TransactionManager
     private let reachabilityManager: ReachabilityManager
     private let segWitHelper: SegWitBech32
-    private let networkType: NetworkType
+    public let networkType: NetworkType
     private let logger: Logger?
 
     private let wallet: Wallet
