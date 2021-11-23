@@ -79,7 +79,7 @@ extension BinanceChainAdapter {
     }
 
     var transactionsObservable: Observable<Void> {
-        return asset.transactionsObservable.map { _ in () }
+        return asset.transactionsObservable(filterType: nil).map { _ in () }
     }
 
     func validate(address: String) throws {
