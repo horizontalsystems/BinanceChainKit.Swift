@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Current Version
 
+## 0.5.0
+
 * Add type filters to transactions [ **non-back-compatible api change** ]
 
 ## 0.4.0

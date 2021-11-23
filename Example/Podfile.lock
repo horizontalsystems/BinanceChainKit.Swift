@@ -1,9 +1,9 @@
 PODS:
   - Alamofire (5.4.3)
-  - BinanceChainKit.swift (0.4.0):
+  - BinanceChainKit.swift (0.5.0):
     - GRDB.swift (~> 5.0)
     - HdWalletKit.swift (~> 1.5)
-    - HsToolKit.swift (~> 1.0)
+    - HsToolKit.swift (~> 1.3)
     - OpenSslKit.swift (~> 1.0)
     - RxSwift (~> 5.0)
     - Secp256k1Kit.swift (~> 1.0)
@@ -110,7 +110,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
-  BinanceChainKit.swift: db11694af0b5970b65b563f934a054907a3db4cd
+  BinanceChainKit.swift: 5c282784ee82eb95117b584858f640e9769d4562
   CNIOAtomics: 7c3a151d54ae24b0160283ac93e3b06380ce6973
   CNIOBoringSSL: 2433ef7bb7f34e0903f576771c3004b42a8c30df
   CNIOBoringSSLShims: 97f8c084e74a2d2f7e3bfa1695e4a0c7e1e7ecc5
@@ -139,4 +139,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f36f4b03d9109be4a0c830a0f6346eb3df045b57
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
