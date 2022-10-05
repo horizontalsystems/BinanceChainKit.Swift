@@ -1,18 +1,16 @@
-# BinanceChainKit
-
-## Example
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+# BinanceChainKit.Swift
 
 ## Installation
 
-BinanceChainKit is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+### Swift Package Manager
 
-```ruby
-pod 'BinanceChainKit.swift'
+```swift
+dependencies: [
+    .package(url: "https://github.com/horizontalsystems/BinanceChainKit.Swift.git", .upToNextMajor(from: "1.0.0"))
+]
 ```
 
 ## License
 
-BinanceChainKit is available under the MIT license. See the LICENSE file for more info.
+The `BinanceChainKit.Swift` toolkit is open source and available under the terms of the [MIT License](https://github.com/horizontalsystems/BinanceChainKit.Swift/blob/master/LICENSE).
+

@@ -25,3 +25,9 @@ DerivedData
 Pods/
 .idea
 GeneratedMocks.swift
+
+# SPM
+
+Package.resolved
+.swiftpm
+.build/
