@@ -253,7 +253,7 @@ extension BinanceChainKit {
     }
 
     private static func wallet(seed: Data, segWitHelper: SegWitBech32) throws -> Wallet {
-        let hdWallet = HDWallet(seed: seed, coinType: 714, xPrivKey: 0, xPubKey: 0)
+        let hdWallet = HDWallet(seed: seed, coinType: 714, xPrivKey: HDExtendedKeyVersion.xprv.rawValue)
         return try Wallet(hdWallet: hdWallet, segWitHelper: segWitHelper)
     }
 }
