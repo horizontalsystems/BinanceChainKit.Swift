@@ -289,7 +289,7 @@ extension BinanceChainKit {
         case mainNet
         case testNet
 
-        var addressPrefix: String {
+        public var addressPrefix: String {
             switch self {
             case .mainNet: return "bnb"
             case .testNet: return "tbnb"

@@ -12,11 +12,11 @@
 import Foundation
 
 /// Segregated Witness Address encoder/decoder
-class SegWitBech32 {
+public class SegWitBech32 {
     private let bech32 = Bech32()
     private let hrp: String
 
-    init(hrp: String) {
+    public init(hrp: String) {
         self.hrp = hrp
     }
 
