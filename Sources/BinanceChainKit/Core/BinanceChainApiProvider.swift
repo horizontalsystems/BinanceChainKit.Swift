@@ -1,7 +1,6 @@
 import Foundation
 import HsToolKit
 import Alamofire
-import RxSwift
 
 // https://binance-chain.github.io/api-reference/dex-api/paths.html
 
@@ -64,38 +63,34 @@ class BinanceChainApiProvider {
     }
 
 
-    private func time() {
-        self.api(path: .time, method: .get, parser: TimesParser())
+    private func time() async throws {
+        try await self.api(path: .time, method: .get, parser: TimesParser())
     }
 
-    private func nodeInfo() -> Single<NodeInfo> {
-        self.api(path: .nodeInfo, method: .get, parser: NodeInfoParser()).map { $0.nodeInfo }
+    private func validators() async throws {
+        try await self.api(path: .validators, method: .get, parser: ValidatorsParser())
     }
 
-    private func validators() {
-        self.api(path: .validators, method: .get, parser: ValidatorsParser())
+    private func peers() async throws {
+        try await self.api(path: .peers, method: .get, parser: PeerParser())
     }
 
-    private func peers() {
-        self.api(path: .peers, method: .get, parser: PeerParser())
-    }
-
-    private func account(address: String) -> Single<Account> {
+    private func account(address: String) async throws -> Account {
         let path = String(format: "%@/%@", Path.account.rawValue, address)
-        return self.api(path: path, method: .get, parser: AccountParser()).map { $0.account }
+        return try await api(path: path, method: .get, parser: AccountParser()).account
     }
 
-    private func sequence(address: String) -> Single<Int> {
+    private func sequence(address: String) async throws -> Int {
         let path = String(format: "%@/%@/%@", Path.account.rawValue, address, Path.sequence.rawValue)
-        return self.api(path: path, method: .get, parser: SequenceParser()).map { $0.sequence }
+        return try await api(path: path, method: .get, parser: SequenceParser()).sequence
     }
 
-    private func tx(hash: String) -> Single<ApiTransaction> {
+    private func tx(hash: String) async throws -> ApiTransaction {
         let path = String(format: "%@/%@?format=json", Path.tx.rawValue, hash)
-        return self.api(path: path, method: .get, parser: ApiTransactionParser()).map { $0.apiTransaction }
+        return try await api(path: path, method: .get, parser: ApiTransactionParser()).apiTransaction
     }
 
-    private func tokens(limit: Limit? = nil, offset: Int? = nil) {
+    private func tokens(limit: Limit? = nil, offset: Int? = nil) async throws {
         var parameters: Parameters = [:]
         if let limit = limit {
             parameters["limit"] = limit.rawValue
@@ -103,10 +98,10 @@ class BinanceChainApiProvider {
         if let offset = offset {
             parameters["offset"] = offset
         }
-        self.api(path: .tokens, method: .get, parameters: parameters, parser: TokenParser())
+        try await self.api(path: .tokens, method: .get, parameters: parameters, parser: TokenParser())
     }
 
-    private func markets(limit: Limit? = nil, offset: Int? = nil) {
+    private func markets(limit: Limit? = nil, offset: Int? = nil) async throws {
         var parameters: Parameters = [:]
         if let limit = limit {
             parameters["limit"] = limit.rawValue
@@ -114,42 +109,37 @@ class BinanceChainApiProvider {
         if let offset = offset {
             parameters["offset"] = offset
         }
-        self.api(path: .markets, method: .get, parameters: parameters, parser: MarketsParser())
+        try await self.api(path: .markets, method: .get, parameters: parameters, parser: MarketsParser())
     }
 
-    private func fees() {
-        self.api(path: .fees, method: .get, parser: FeesParser())
+    private func fees() async throws {
+        try await self.api(path: .fees, method: .get, parser: FeesParser())
     }
 
-    private func marketDepth(symbol: String, limit: Limit? = nil) {
+    private func marketDepth(symbol: String, limit: Limit? = nil) async throws {
         var parameters: Parameters = [:]
         parameters["symbol"] = symbol
         if let limit = limit {
             parameters["limit"] = limit.rawValue
         }
-        self.api(path: .depth, method: .get, parameters: parameters, parser: MarketDepthParser())
+        try await self.api(path: .depth, method: .get, parameters: parameters, parser: MarketDepthParser())
     }
 
-    private func broadcast(message: Message, sync: Bool = true) -> Single<[ApiTransaction]> {
-        do {
-            let bytes = try message.encode()
-            return self.broadcast(message: bytes, sync: sync)
-        } catch let error {
-            return Single.error(error)
-        }
-
+    private func broadcast(message: Message, sync: Bool = true) async throws -> [ApiTransaction] {
+        let bytes = try message.encode()
+        return try await broadcast(message: bytes, sync: sync)
     }
 
-    private func broadcast(message bytes: Data, sync: Bool = true) -> Single<[ApiTransaction]> {
+    private func broadcast(message bytes: Data, sync: Bool = true) async throws -> [ApiTransaction] {
         var path = Path.broadcast.rawValue
         if (sync) {
             path += "/?sync=1"
         }
 
-        return self.api(path: path, method: .post, body: bytes, parser: BroadcastParser()).map { $0.broadcast }
+        return try await api(path: path, method: .post, body: bytes, parser: BroadcastParser()).broadcast
     }
 
-    private func klines(symbol: String, interval: Interval? = nil, limit: Limit? = nil, startTime: TimeInterval? = nil, endTime: TimeInterval? = nil) {
+    private func klines(symbol: String, interval: Interval? = nil, limit: Limit? = nil, startTime: TimeInterval? = nil, endTime: TimeInterval? = nil) async throws {
         var parameters: Parameters = [:]
         parameters["symbol"] = symbol
         if let interval = interval {
@@ -164,11 +154,11 @@ class BinanceChainApiProvider {
         if let endTime = endTime {
             parameters["endTime"] = endTime
         }
-        self.api(path: .klines, method: .get, parameters: parameters, parser: CandlestickParser())
+        try await self.api(path: .klines, method: .get, parameters: parameters, parser: CandlestickParser())
     }
 
     private func closedOrders(address: String, endTime: TimeInterval? = nil, limit: Limit? = nil, offset: Int? = nil, side: Side? = nil, startTime: TimeInterval? = nil,
-                              status: Status? = nil, symbol: String? = nil, total: Total = .required) -> Single<OrderList> {
+                              status: Status? = nil, symbol: String? = nil, total: Total = .required) async throws -> OrderList {
         var parameters: Parameters = [:]
         parameters["address"] = address
         parameters["total"] = total.rawValue
@@ -194,10 +184,10 @@ class BinanceChainApiProvider {
             parameters["symbol"] = symbol
         }
         let path = String(format: "%@/?%@", Path.closedOrders.rawValue, parameters.query)
-        return self.api(path: path, method: .get, parser: OrderListParser()).map { $0.orderList }
+        return try await self.api(path: path, method: .get, parser: OrderListParser()).orderList
     }
 
-    private func openOrders(address: String, limit: Limit? = nil, offset: Int? = nil, symbol: String? = nil, total: Total = .required) -> Single<OrderList> {
+    private func openOrders(address: String, limit: Limit? = nil, offset: Int? = nil, symbol: String? = nil, total: Total = .required) async throws -> OrderList {
         var parameters: Parameters = [:]
         parameters["address"] = address
         parameters["total"] = total.rawValue
@@ -211,20 +201,20 @@ class BinanceChainApiProvider {
             parameters["symbol"] = symbol
         }
         let path = String(format: "%@/?%@", Path.openOrders.rawValue, parameters.query)
-        return self.api(path: path, method: .get, parser: OrderListParser()).map { $0.orderList }
+        return try await self.api(path: path, method: .get, parser: OrderListParser()).orderList
     }
 
-    private func order(id: String) -> Single<Order> {
+    private func order(id: String) async throws -> Order {
         let path = String(format: "%@/%@", Path.orders.rawValue, id)
-        return self.api(path: path, method: .get, parser: OrderParser()).map { $0.order }
+        return try await self.api(path: path, method: .get, parser: OrderParser()).order
     }
 
-    private func ticker(symbol: String) -> Single<[TickerStatistics]> {
+    private func ticker(symbol: String) async throws -> [TickerStatistics] {
         let path = String(format: "%@/?symbol=%@", Path.ticker.rawValue, symbol)
-        return self.api(path: path, method: .get, parser: TickerStatisticsParser()).map { $0.ticker }
+        return try await self.api(path: path, method: .get, parser: TickerStatisticsParser()).ticker
     }
 
-    private func trades(address: String? = nil, buyerOrderId: String? = nil, end: TimeInterval? = nil, height: Double? = nil, offset: Int? = nil, quoteAsset: String? = nil, sellerOrderId: String? = nil, side: Side? = nil, start: TimeInterval? = nil, symbol: String? = nil, total: Total? = nil) {
+    private func trades(address: String? = nil, buyerOrderId: String? = nil, end: TimeInterval? = nil, height: Double? = nil, offset: Int? = nil, quoteAsset: String? = nil, sellerOrderId: String? = nil, side: Side? = nil, start: TimeInterval? = nil, symbol: String? = nil, total: Total? = nil) async throws {
         var parameters: Parameters = [:]
         parameters["address"] = address
         if let end = end {
@@ -254,10 +244,10 @@ class BinanceChainApiProvider {
         if let total = total {
             parameters["total"] = total.rawValue
         }
-        self.api(path: .trades, method: .get, parameters: parameters, parser: TradeParser())
+        try await self.api(path: .trades, method: .get, parameters: parameters, parser: TradeParser())
     }
 
-    private func transactions(address: String, blockHeight: Double? = nil, endTime: TimeInterval? = nil, limit: Limit? = nil, offset: Int? = nil, side: Side? = nil, startTime: TimeInterval? = nil, txAsset: String? = nil, txType: TxType? = nil) -> Single<Transactions> {
+    private func transactions(address: String, blockHeight: Double? = nil, endTime: TimeInterval? = nil, limit: Limit? = nil, offset: Int? = nil, side: Side? = nil, startTime: TimeInterval? = nil, txAsset: String? = nil, txType: TxType? = nil) async throws -> Transactions {
         var parameters: Parameters = [:]
         parameters["address"] = address
         if let blockHeight = blockHeight {
@@ -284,41 +274,41 @@ class BinanceChainApiProvider {
         if let txType = txType {
             parameters["txType"] = txType.rawValue
         }
-        return self.api(path: .transactions, method: .get, parameters: parameters, parser: TransactionsParser()).map { $0.transactions }
+
+        return try await api(path: .transactions, method: .get, parameters: parameters, parser: TransactionsParser()).transactions
     }
 
-    private func broadcastSingle(message: Message) -> Single<String> {
-        broadcast(message: message, sync: true).map { transactions in
-            guard let transaction = transactions.first else {
-                throw BinanceChainKit.ApiError.noTransactionReturned
-            }
+    private func broadcast(message: Message) async throws -> String {
+        let transactions = try await broadcast(message: message, sync: true)
 
-            guard transaction.ok else {
-                throw BinanceChainKit.ApiError.wrongTransaction
-            }
-
-            return transaction.hash
+        guard let transaction = transactions.first else {
+            throw BinanceChainKit.ApiError.noTransactionReturned
         }
+
+        guard transaction.ok else {
+            throw BinanceChainKit.ApiError.wrongTransaction
+        }
+
+        return transaction.hash
     }
 
     // MARK: - Utils
 
     @discardableResult
-    func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<BinanceChainApiProvider.Response> {
-        self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser)
+    func api(path: Path, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser) async throws -> BinanceChainApiProvider.Response {
+        try await self.api(path: path.rawValue, method: method, parameters: parameters, parser: parser)
     }
 
-    func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser = Parser()) -> Single<BinanceChainApiProvider.Response> {
+    func api(path: String, method: HTTPMethod = .get, parameters: Parameters = [:], body: Data? = nil, parser: Parser) async throws -> BinanceChainApiProvider.Response {
         var encoding: ParameterEncoding = URLEncoding.default
         if let body = body {
             encoding = HexEncoding(data: body)
         }
-        let url = String(format: "%@/api/v1/%@", self.endpoint, path)
-        let request = networkManager.session
-                .request(url, method: method, parameters: parameters, encoding: encoding, interceptor: RateLimitRetrier())
-                .cacheResponse(using: ResponseCacher(behavior: .doNotCache))
+        let url = String(format: "%@/api/v1/%@", endpoint, path)
 
-        return networkManager.single(request: request, mapper: parser)
+        let data = try await networkManager.fetchData(url: url, method: method, parameters: parameters, encoding: encoding, interceptor: RateLimitRetrier(), responseCacherBehavior: .doNotCache)
+
+        return try parser.parse(data: data)
     }
 
 }
@@ -329,9 +319,7 @@ extension BinanceChainApiProvider: RequestInterceptor {
         private var attempt = 0
 
         func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> ()) {
-            let error = NetworkManager.unwrap(error: error)
-
-            if let binanceError = error as? BinanceError, binanceError.httpStatus == 429 {
+            if let afError = error as? AFError, case let .responseValidationFailed(reason) = afError, case let .unacceptableStatusCode(code) = reason, code == 429 {
                 completion(resolveResult())
             } else {
                 completion(.doNotRetry)
@@ -353,31 +341,40 @@ extension BinanceChainApiProvider: RequestInterceptor {
 
 extension BinanceChainApiProvider: IApiProvider {
 
-    func nodeInfoSingle() -> Single<NodeInfo> {
-        nodeInfo()
+    func nodeInfo() async throws -> NodeInfo {
+        try await self.api(path: .nodeInfo, method: .get, parser: NodeInfoParser()).nodeInfo
     }
 
-    func transactionsSingle(account: String, limit: Int, startTime: TimeInterval) -> Single<[Tx]> {
-        transactions(address: account, limit: Limit(rawValue: limit), startTime: startTime, txType: .transfer).map { $0.tx }
+    func transactions(account: String, limit: Int, startTime: TimeInterval) async throws -> [Tx] {
+        try await transactions(address: account, limit: Limit(rawValue: limit), startTime: startTime, txType: .transfer).tx
     }
 
-    func accountSingle(for address: String) -> Single<Account> {
-        account(address: address)
+    func account(for address: String) async throws -> Account {
+        do {
+            return try await account(address: address)
+        } catch {
+            if let afError = error as? AFError, case let .responseValidationFailed(reason) = afError, case let .unacceptableStatusCode(code) = reason, code == 404 {
+                // New account
+                return Account()
+            }
+
+            throw error
+        }
     }
 
-    func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String> {
+    func send(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) async throws -> String {
         let message = Message.transfer(symbol: symbol, amount: amount, to: to, memo: memo, wallet: wallet)
-
-        return broadcastSingle(message: message)
+        return try await broadcast(message: message)
     }
 
-    func transferOutSingle(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) -> Single<String> {
+    func transferOut(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) async throws -> String {
         let message = Message.transferOut(symbol: symbol, bscPublicKeyHash: bscPublicKeyHash, amount: amount, expireTime: expireTime, wallet: wallet)
-
-        return broadcastSingle(message: message)
+        return try await broadcast(message: message)
     }
 
-    func blockHeightSingle(forTransaction hash: String) -> Single<Int> {
-        tx(hash: hash).map { Int($0.height) ?? 0 }
+    func blockHeight(forTransaction hash: String) async throws -> Int {
+        let transaction = try await tx(hash: hash)
+        return Int(transaction.height) ?? 0
     }
+
 }

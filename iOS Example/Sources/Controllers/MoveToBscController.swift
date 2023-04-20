@@ -1,9 +1,11 @@
+import Combine
 import UIKit
-import RxSwift
 import SnapKit
+import HsExtensions
 
 class MoveToBscController: UIViewController {
-    private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
+    private var tasks = Set<AnyTask>()
 
     private let amountTextField = UITextField()
     private let coinLabel = UILabel()
@@ -54,26 +56,41 @@ class MoveToBscController: UIViewController {
         view.endEditing(true)
     }
 
-    @objc private func onTapMove() {
+    @objc private func onTapMove() throws {
         guard let amountString = amountTextField.text, let amount = Decimal(string: amountString, locale: .current) else {
             return
         }
 
-        adapter.moveToBSC(symbol: adapter.coin, amount: amount)
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-                .observeOn(MainScheduler.instance)
-                .subscribe(onSuccess: { [weak self] address in
-                    let alert = UIAlertController(title: "Success", message: "\(amount.description) sent to \(address)", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-                    self?.present(alert, animated: true)
-                    self?.view.endEditing(true)
-                }, onError: { [weak self] error in
-                    let alert = UIAlertController(title: "Send Error", message: error.localizedDescription, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-                    self?.present(alert, animated: true)
-                    self?.view.endEditing(true)
-                })
-                .disposed(by: disposeBag)
+        Task { [weak self, adapter] in
+            do {
+                let address = try await adapter.moveToBSC(symbol: adapter.coin, amount: amount)
+
+                let alert = UIAlertController(title: "Success", message: "\(amount.description) sent to \(address)", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                self?.present(alert, animated: true)
+                self?.view.endEditing(true)
+            } catch {
+                let alert = UIAlertController(title: "Send Error", message: "\(error)", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                self?.present(alert, animated: true)
+                self?.view.endEditing(true)
+            }
+        }.store(in: &tasks)
     }
 
+}
+
+extension Future where Failure == Error {
+    convenience init(asyncFunc: @escaping () async throws -> Output) {
+        self.init { promise in
+            Task {
+                do {
+                    let result = try await asyncFunc()
+                    promise(.success(result))
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+        }
+    }
 }

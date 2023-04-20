@@ -1,10 +1,12 @@
 import Foundation
-import RxSwift
+import Combine
 import HdWalletKit
 import HsToolKit
+import HsExtensions
 
 public class BinanceChainKit {
-    private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
+    private var tasks = Set<AnyTask>()
 
     private let balanceManager: BalanceManager
     private let transactionManager: TransactionManager
@@ -14,24 +16,13 @@ public class BinanceChainKit {
     private let logger: Logger?
 
     private let wallet: Wallet
-    private let lastBlockHeightSubject = PublishSubject<Int>()
-    private let syncStateSubject = PublishSubject<SyncState>()
+    private let lastBlockHeightSubject = PassthroughSubject<Int, Never>()
+    private let syncStateSubject = PassthroughSubject<SyncState, Never>()
 
     private var assets = [Asset]()
 
-    public var syncState: SyncState = .notSynced(error: BinanceChainKit.SyncError.notStarted) {
-        didSet {
-            syncStateSubject.onNext(syncState)
-        }
-    }
-
-    public var lastBlockHeight: Int? {
-        didSet {
-            if let lastBlockHeight = lastBlockHeight {
-                lastBlockHeightSubject.onNext(lastBlockHeight)
-            }
-        }
-    }
+    @DistinctPublished public var syncState: SyncState = .notSynced(error: BinanceChainKit.SyncError.notStarted)
+    @DistinctPublished public var lastBlockHeight: Int?
 
     public var binanceBalance: Decimal {
         balanceManager.balance(symbol: "BNB")?.amount ?? 0
@@ -52,28 +43,36 @@ public class BinanceChainKit {
 
         lastBlockHeight = balanceManager.latestBlock?.height
 
-        reachabilityManager.reachabilityObservable
-                .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-                .subscribe(onNext: { [weak self] _ in
+        reachabilityManager.$isReachable
+                .sink { [weak self] aaa in
                     self?.refresh()
-                })
-                .disposed(by: disposeBag)
+                }
+                .store(in: &cancellables)
     }
 
     private func asset(symbol: String) -> Asset? {
         assets.first { $0.symbol == symbol }
     }
 
+    private func _watchOnChain(transaction hash: String) async {
+        do {
+            _ = try await transactionManager.blockHeight(forTransaction: hash)
+            refresh()
+        } catch {
+            logger?.error("Transaction send error: \(error)")
+        }
+    }
+
     private func watchOnChain(transaction hash: String) {
-        transactionManager.blockHeightSingle(forTransaction: hash)
-                .subscribe(
-                        onSuccess: { [weak self] blockHeight in
-                            self?.refresh()
-                        }, onError: { [weak self] error in
-                            self?.logger?.error("Transaction send error: \(error)")
-                        }
-                )
-                .disposed(by: disposeBag)
+        Task { [weak self] in await self?._watchOnChain(transaction: hash) }.store(in: &tasks)
+    }
+
+    private func syncBalance(account: String) {
+        Task { [weak self] in await self?.balanceManager.sync(account: account) }.store(in: &tasks)
+    }
+
+    private func syncTransactions() {
+        Task { [weak self] in await self?.transactionManager.sync() }.store(in: &tasks)
     }
 
 }
@@ -109,55 +108,41 @@ extension BinanceChainKit {
         logger?.debug("Syncing")
         syncState = .syncing
 
-        balanceManager.sync(account: wallet.address)
-        transactionManager.sync()
-    }
-
-    public var lastBlockHeightObservable: Observable<Int> {
-        lastBlockHeightSubject.asObservable()
-    }
-
-    public var syncStateObservable: Observable<SyncState> {
-        syncStateSubject.asObservable()
+        syncBalance(account: wallet.address)
+        syncTransactions()
     }
 
     public func validate(address: String) throws {
         try _ = segWitHelper.decode(addr: address)
     }
 
-    public func transactionsSingle(symbol: String, filterType: TransactionFilterType? = nil, fromTransactionHash: String? = nil, limit: Int? = nil) -> Single<[TransactionInfo]> {
-        transactionManager.transactionsSingle(symbol: symbol, filterType: filterType, fromTransactionHash: fromTransactionHash, limit: limit).map {
-            $0.map { transaction in TransactionInfo(transaction: transaction) }
-        }
+    public func transactions(symbol: String, filterType: TransactionFilterType? = nil, fromTransactionHash: String? = nil, limit: Int? = nil) -> [TransactionInfo] {
+        transactionManager.transactions(symbol: symbol, filterType: filterType, fromTransactionHash: fromTransactionHash, limit: limit)
+                .map { transaction in
+                    TransactionInfo(transaction: transaction)
+                }
     }
 
     public func transaction(symbol: String, hash: String) -> TransactionInfo? {
         transactionManager.transaction(symbol: symbol, hash: hash).map { TransactionInfo(transaction: $0) }
     }
 
-    public func sendSingle(symbol: String, to: String, amount: Decimal, memo: String) -> Single<String> {
+    public func send(symbol: String, to: String, amount: Decimal, memo: String) async throws -> String {
         logger?.debug("Sending \(amount) \(symbol) to \(to)")
 
-        return transactionManager.sendSingle(symbol: symbol, to: to, amount: amount, memo: memo)
-                .do(onSuccess: { [weak self] hash in
-                    self?.watchOnChain(transaction: hash)
-                })
+        let hash = try await transactionManager.send(symbol: symbol, to: to, amount: amount, memo: memo)
+        watchOnChain(transaction: hash)
+        return hash
     }
 
-    public func moveToBSCSingle(symbol: String, amount: Decimal) -> Single<String> {
+    public func moveToBSC(symbol: String, amount: Decimal) async throws -> String {
         logger?.debug("Moving \(amount) \(symbol) to BSC")
 
-        let bscPublicKeyHash: Data
-        do {
-            bscPublicKeyHash = try wallet.publicKeyHash(path: networkType == .mainNet ? Wallet.bscMainNetKeyPath : Wallet.bscTestNetKeyPath)
-        } catch {
-            return Single.error(error)
-        }
+        let bscPublicKeyHash = try wallet.publicKeyHash(path: networkType == .mainNet ? Wallet.bscMainNetKeyPath : Wallet.bscTestNetKeyPath)
 
-        return transactionManager.moveToBscSingle(symbol: symbol, bscPublicKeyHash: bscPublicKeyHash, amount: amount)
-                .do(onSuccess: { [weak self] hash in
-                    self?.watchOnChain(transaction: hash)
-                })
+        let hash = try await transactionManager.moveToBsc(symbol: symbol, bscPublicKeyHash: bscPublicKeyHash, amount: amount)
+        watchOnChain(transaction: hash)
+        return hash
     }
 
     public var statusInfo: [(String, Any)] {
@@ -194,7 +179,7 @@ extension BinanceChainKit: ITransactionManagerDelegate {
         let transactionsMap = Dictionary(grouping: transactions, by: { $0.symbol })
 
         for (symbol, transactions) in transactionsMap {
-            asset(symbol: symbol)?.transactionsSubject.onNext(transactions.map { TransactionInfo(transaction: $0) })
+            asset(symbol: symbol)?.transactionsSubject.send(transactions.map { TransactionInfo(transaction: $0) })
         }
     }
 
@@ -319,26 +304,6 @@ extension BinanceChainKit {
         case checksumSizeTooLow
         case dataSizeMismatch(Int)
         case encodingCheckFailed
-    }
-
-}
-
-extension BinanceChainKit {
-
-    public class BinanceAccountProvider {
-        private let segWitHelper: SegWitBech32
-        private let apiProvider: BinanceChainApiProvider
-
-        public init(networkType: NetworkType = .mainNet) {
-            segWitHelper = BinanceChainKit.segWitHelper(networkType: networkType)
-            apiProvider = BinanceChainApiProvider(networkManager: NetworkManager(), endpoint: networkType.endpoint)
-        }
-
-        public func accountSingle(seed: Data) throws -> Single<Account> {
-            let wallet = try BinanceChainKit.wallet(seed: seed, segWitHelper: segWitHelper)
-            return apiProvider.accountSingle(for: wallet.address)
-        }
-
     }
 
 }

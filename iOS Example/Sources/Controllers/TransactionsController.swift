@@ -1,11 +1,11 @@
+import Combine
 import UIKit
-import RxSwift
 
 class TransactionsController: UITableViewController {
     private let limit = 20
 
     private let adapter: BinanceChainAdapter = Manager.shared.adapter
-    private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     private var transactions = [TransactionRecord]()
     private var loading = false
@@ -19,21 +19,19 @@ class TransactionsController: UITableViewController {
         tableView.tableFooterView = UIView()
         tableView.separatorInset = .zero
 
-        adapter.lastBlockHeightObservable
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .utility))
-                .observeOn(MainScheduler.instance)
-                .subscribe(onNext: { [weak self] in
+        adapter.lastBlockHeightPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] in
                     self?.tableView.reloadData()
-                })
-                .disposed(by: disposeBag)
+                }
+                .store(in: &cancellables)
 
-        adapter.transactionsObservable
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .utility))
-                .observeOn(MainScheduler.instance)
-                .subscribe(onNext: { [weak self] in
+        adapter.transactionsPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] in
                     self?.onTransactionsUpdated()
-                })
-                .disposed(by: disposeBag)
+                }
+                .store(in: &cancellables)
 
         loadNext()
     }
@@ -51,13 +49,8 @@ class TransactionsController: UITableViewController {
 
         loading = true
 
-        adapter.transactionsSingle(fromTransactionHash: transactions.last?.hash, limit: limit)
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .utility))
-                .observeOn(MainScheduler.instance)
-                .subscribe(onSuccess: { [weak self] transactions in
-                    self?.onLoad(transactions: transactions)
-                })
-                .disposed(by: disposeBag)
+        let transactions = adapter.transactions(fromTransactionHash: transactions.last?.hash, limit: limit)
+        onLoad(transactions: transactions)
     }
 
     private func onLoad(transactions: [TransactionRecord]) {

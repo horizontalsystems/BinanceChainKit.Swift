@@ -1,13 +1,12 @@
 import Foundation
-import RxSwift
 
 protocol IApiProvider {
-    func nodeInfoSingle() -> Single<NodeInfo>
-    func transactionsSingle(account: String, limit: Int, startTime: TimeInterval) -> Single<[Tx]>
-    func accountSingle(for: String) -> Single<Account>
-    func sendSingle(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) -> Single<String>
-    func transferOutSingle(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) -> Single<String>
-    func blockHeightSingle(forTransaction: String) -> Single<Int>
+    func nodeInfo() async throws -> NodeInfo
+    func transactions(account: String, limit: Int, startTime: TimeInterval) async throws -> [Tx]
+    func account(for: String) async throws -> Account
+    func send(symbol: String, to: String, amount: Double, memo: String, wallet: Wallet) async throws -> String
+    func transferOut(symbol: String, bscPublicKeyHash: Data, amount: Double, expireTime: Int64, wallet: Wallet) async throws -> String
+    func blockHeight(forTransaction: String) async throws -> Int
 }
 
 protocol IStorage {
@@ -23,7 +22,7 @@ protocol IStorage {
     func save(balances: [Balance])
     func save(transactions: [Transaction])
 
-    func transactionsSingle(symbol: String, fromAddress: String?, toAddress: String?, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]>
+    func transactions(symbol: String, fromAddress: String?, toAddress: String?, fromTransactionHash: String?, limit: Int?) -> [Transaction]
     func transaction(symbol: String, hash: String) -> Transaction?
 }
 

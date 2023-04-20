@@ -1,11 +1,11 @@
 import UIKit
 import SnapKit
-import RxSwift
 import BinanceChainKit
+import HsExtensions
 
 class SendController: UIViewController {
     private let adapter: BinanceChainAdapter = Manager.shared.adapter
-    private let disposeBag = DisposeBag()
+    private var tasks = Set<AnyTask>()
 
     private let addressTextField = UITextField()
     private let amountTextField = UITextField()
@@ -143,37 +143,38 @@ class SendController: UIViewController {
     }
 
     @objc private func send() {
-        guard let address = addressTextField.text?.trimmingCharacters(in: .whitespaces) else {
-            return
-        }
+        present(UINavigationController(rootViewController: MoveToBscController()), animated: true)
+//        guard let address = addressTextField.text?.trimmingCharacters(in: .whitespaces) else {
+//            return
+//        }
+//
+//        do {
+//            try adapter.validate(address: address)
+//        } catch {
+//            show(error: "Invalid address")
+//            return
+//        }
+//
+//        guard let amountString = amountTextField.text, let amount = Decimal(string: amountString, locale: .current) else {
+//            show(error: "Invalid amount")
+//            return
+//        }
+//
+//        let memo = memoTextField.text ?? ""
 
-        do {
-            try adapter.validate(address: address)
-        } catch {
-            show(error: "Invalid address")
-            return
-        }
-
-        guard let amountString = amountTextField.text, let amount = Decimal(string: amountString, locale: .current) else {
-            show(error: "Invalid amount")
-            return
-        }
-
-        let memo = memoTextField.text ?? ""
-
-        adapter.sendSingle(to: address, amount: amount, memo: memo)
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-                .observeOn(MainScheduler.instance)
-                .subscribe(onSuccess: { [weak self] _ in
-                    self?.addressTextField.text = ""
-                    self?.amountTextField.text = ""
-                    self?.memoTextField.text = ""
-
-                    self?.showSuccess(address: address, amount: amount)
-                }, onError: { [weak self] error in
-                    self?.show(error: "Send failed: \(error)")
-                })
-                .disposed(by: disposeBag)
+//        adapter.sendSingle(to: address, amount: amount, memo: memo)
+//                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+//                .observeOn(MainScheduler.instance)
+//                .subscribe(onSuccess: { [weak self] _ in
+//                    self?.addressTextField.text = ""
+//                    self?.amountTextField.text = ""
+//                    self?.memoTextField.text = ""
+//
+//                    self?.showSuccess(address: address, amount: amount)
+//                }, onError: { [weak self] error in
+//                    self?.show(error: "Send failed: \(error)")
+//                })
+//                .disposed(by: disposeBag)
     }
 
     private func show(error: String) {
