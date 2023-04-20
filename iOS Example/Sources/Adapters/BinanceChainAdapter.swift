@@ -1,6 +1,6 @@
 import Foundation
+import Combine
 import BinanceChainKit
-import RxSwift
 
 class BinanceChainAdapter {
     private let binanceChainKit: BinanceChainKit
@@ -39,8 +39,8 @@ class BinanceChainAdapter {
         )
     }
 
-    func moveToBSC(symbol: String, amount: Decimal) -> Single<String> {
-        binanceChainKit.moveToBSCSingle(symbol: symbol, amount: amount)
+    func moveToBSC(symbol: String, amount: Decimal) async throws -> String {
+        try await binanceChainKit.moveToBSC(symbol: symbol, amount: amount)
     }
 
 }
@@ -67,36 +67,35 @@ extension BinanceChainAdapter {
         asset.balance
     }
 
-    var lastBlockHeightObservable: Observable<Void> {
-        binanceChainKit.lastBlockHeightObservable.map { _ in () }
+    var lastBlockHeightPublisher: some Publisher<Void, Never> {
+        binanceChainKit.$lastBlockHeight.map { _ in () }
     }
 
-    var syncStateObservable: Observable<Void> {
-        binanceChainKit.syncStateObservable.map { _ in () }
+    var syncStatePublisher: some Publisher<Void, Never> {
+        binanceChainKit.$syncState.map { _ in () }
     }
 
-    var balanceObservable: Observable<Void> {
-        asset.balanceObservable.map { _ in () }
+    var balancePublisher: some Publisher<Void, Never> {
+        asset.$balance.map { _ in () }
     }
 
-    var transactionsObservable: Observable<Void> {
-        asset.transactionsObservable(filterType: nil).map { _ in  () }
+    var transactionsPublisher: some Publisher<Void, Never> {
+        asset.transactionsPublisher().map { _ in  () }
     }
 
     func validate(address: String) throws {
 
     }
 
-    func sendSingle(to: String, amount: Decimal, memo: String) -> Single<String> {
-        binanceChainKit.sendSingle(symbol: asset.symbol, to: to, amount: amount, memo: memo)
+    func send(to: String, amount: Decimal, memo: String) async throws -> String {
+        try await binanceChainKit.send(symbol: asset.symbol, to: to, amount: amount, memo: memo)
     }
 
-    func transactionsSingle(fromTransactionHash: String?, limit: Int?) -> Single<[TransactionRecord]> {
-        binanceChainKit.transactionsSingle(symbol: asset.symbol, fromTransactionHash: fromTransactionHash, limit: limit).map {
-            $0.map { transaction in
-                self.transactionRecord(fromTransaction: transaction)
-            }
-        }
+    func transactions(fromTransactionHash: String?, limit: Int?) -> [TransactionRecord] {
+        binanceChainKit.transactions(symbol: asset.symbol, fromTransactionHash: fromTransactionHash, limit: limit)
+                .map { transaction in
+                    transactionRecord(fromTransaction: transaction)
+                }
     }
 
     func transaction(hash: String) -> TransactionRecord? {

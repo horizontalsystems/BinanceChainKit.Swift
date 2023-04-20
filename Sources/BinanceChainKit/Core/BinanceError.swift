@@ -2,7 +2,6 @@ import Foundation
 import Alamofire
 
 public class BinanceError: Error {
-
     public var code: Int
     public var message: String
     public var httpStatus: Int? = nil

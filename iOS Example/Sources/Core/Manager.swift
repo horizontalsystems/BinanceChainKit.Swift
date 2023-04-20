@@ -1,5 +1,4 @@
 import Foundation
-import RxSwift
 import BinanceChainKit
 import HdWalletKit
 

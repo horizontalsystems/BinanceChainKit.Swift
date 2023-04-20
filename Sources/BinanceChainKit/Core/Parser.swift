@@ -2,7 +2,7 @@ import Foundation
 import SwiftyJSON
 import HsToolKit
 
-class Parser: IApiMapper {
+class Parser {
 
     struct ParseError: Error, LocalizedError {
 
@@ -16,16 +16,8 @@ class Parser: IApiMapper {
 
     }
 
-    func map(statusCode: Int, data: Any?) throws -> BinanceChainApiProvider.Response {
-        guard let jsonData = data else {
-            throw NetworkManager.RequestError.invalidResponse(statusCode: statusCode, data: data)
-        }
-
-        let jsonObject = JSON(jsonData)
-
-        guard 200 <= statusCode && statusCode < 300 else {
-            throw parseError(jsonObject, httpStatus: statusCode)
-        }
+    func parse(data: Data) throws -> BinanceChainApiProvider.Response {
+        let jsonObject = JSON(data)
 
         let response = BinanceChainApiProvider.Response()
         try self.parse(jsonObject, response: response)

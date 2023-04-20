@@ -1,5 +1,4 @@
 import Foundation
-import RxSwift
 import GRDB
 
 class Storage {
@@ -69,7 +68,7 @@ class Storage {
 extension Storage: IStorage {
 
     var latestBlock: LatestBlock? {
-        return try? dbPool.read { db in
+        try? dbPool.read { db in
             try LatestBlock.fetchOne(db)
         }
     }
@@ -81,7 +80,7 @@ extension Storage: IStorage {
     }
 
     var syncState: SyncState? {
-        return try? dbPool.read { db in
+        try? dbPool.read { db in
             try SyncState.fetchOne(db)
         }
     }
@@ -93,13 +92,13 @@ extension Storage: IStorage {
     }
 
     func balance(symbol: String) -> Balance? {
-        return try? dbPool.read { db in
+        try? dbPool.read { db in
             try Balance.filter(Balance.Columns.symbol == symbol).fetchOne(db)
         }
     }
 
     func allBalances() -> [Balance] {
-        return try! dbPool.read { db in
+        try! dbPool.read { db in
             try Balance.fetchAll(db)
         }
     }
@@ -128,34 +127,28 @@ extension Storage: IStorage {
         }
     }
 
-    func transactionsSingle(symbol: String, fromAddress: String?, toAddress: String?, fromTransactionHash: String?, limit: Int?) -> Single<[Transaction]> {
-        Single.create { [weak self] observer in
-            try? self?.dbPool.read { db in
-                var request = Transaction.filter(Transaction.Columns.symbol == symbol)
+    func transactions(symbol: String, fromAddress: String?, toAddress: String?, fromTransactionHash: String?, limit: Int?) -> [Transaction] {
+        try! dbPool.read { db in
+            var request = Transaction.filter(Transaction.Columns.symbol == symbol)
 
-                if let fromAddress = fromAddress {
-                    request = request.filter(Transaction.Columns.from == fromAddress)
-                }
-
-                if let toAddress = toAddress {
-                    request = request.filter(Transaction.Columns.to == toAddress)
-                }
-
-                if let transactionHash = fromTransactionHash,
-                   let transaction = try Transaction.filter(Transaction.Columns.hash == transactionHash).fetchOne(db) {
-                    request = request.filter(Transaction.Columns.date < transaction.date)
-                }
-
-                if let limit = limit {
-                    request = request.limit(limit)
-                }
-
-                let transactions = try request.order(Transaction.Columns.date.desc).fetchAll(db)
-
-                observer(.success(transactions))
+            if let fromAddress = fromAddress {
+                request = request.filter(Transaction.Columns.from == fromAddress)
             }
 
-            return Disposables.create()
+            if let toAddress = toAddress {
+                request = request.filter(Transaction.Columns.to == toAddress)
+            }
+
+            if let transactionHash = fromTransactionHash,
+               let transaction = try Transaction.filter(Transaction.Columns.hash == transactionHash).fetchOne(db) {
+                request = request.filter(Transaction.Columns.date < transaction.date)
+            }
+
+            if let limit = limit {
+                request = request.limit(limit)
+            }
+
+            return try request.order(Transaction.Columns.date.desc).fetchAll(db)
         }
     }
 
@@ -163,21 +156,6 @@ extension Storage: IStorage {
         try? dbPool.read { db in
             try Transaction.filter(Transaction.Columns.symbol == symbol && Transaction.Columns.hash == hash).fetchOne(db)
         }
-    }
-
-}
-
-extension Decimal: DatabaseValueConvertible {
-
-    public var databaseValue: DatabaseValue {
-        return NSDecimalNumber(decimal: self).stringValue.databaseValue
-    }
-
-    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Decimal? {
-        guard case .string(let rawValue) = dbValue.storage else {
-            return nil
-        }
-        return Decimal(string: rawValue)
     }
 
 }

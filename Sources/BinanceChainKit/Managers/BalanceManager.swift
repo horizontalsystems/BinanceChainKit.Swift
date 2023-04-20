@@ -1,5 +1,4 @@
 import Foundation
-import RxSwift
 import HsToolKit
 
 class BalanceManager {
@@ -8,9 +7,6 @@ class BalanceManager {
     private let storage: IStorage
     private let accountSyncer: AccountSyncer
     private let logger: Logger?
-
-    private let disposeBag = DisposeBag()
-
 
     init(storage: IStorage, accountSyncer: AccountSyncer, logger: Logger? = nil) {
         self.storage = storage
@@ -26,17 +22,14 @@ class BalanceManager {
         storage.balance(symbol: symbol)
     }
 
-    func sync(account: String) {
-        accountSyncer.sync(account: account)
-                .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-                .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-                .subscribe(onSuccess: { [weak self] nodeInfo, account in
-                    self?.handle(nodeInfo: nodeInfo, account: account)
-                }, onError: { [weak self] error in
-                    self?.logger?.error("Failed to sync nodeInfo and account: \(error)")
-                    self?.delegate?.didFailToSync(error: error)
-                })
-                .disposed(by: disposeBag)
+    func sync(account: String) async {
+        do {
+            let (nodeInfo, account) = try await accountSyncer.sync(account: account)
+            handle(nodeInfo: nodeInfo, account: account)
+        } catch {
+            logger?.error("Failed to sync nodeInfo and account: \(error)")
+            delegate?.didFailToSync(error: error)
+        }
     }
 
     private func handle(nodeInfo: NodeInfo, account: Account) {

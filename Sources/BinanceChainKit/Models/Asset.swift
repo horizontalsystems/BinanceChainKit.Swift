@@ -1,18 +1,14 @@
 import Foundation
-import RxSwift
+import Combine
+import HsExtensions
 
 public class Asset {
     public let symbol: String
     public let address: String
 
-    public var balance: Decimal {
-        didSet {
-            balanceSubject.onNext(balance)
-        }
-    }
+    @DistinctPublished public var balance: Decimal
 
-    private let balanceSubject = PublishSubject<Decimal>()
-    let transactionsSubject = PublishSubject<[TransactionInfo]>()
+    let transactionsSubject = PassthroughSubject<[TransactionInfo], Never>()
 
     init(symbol: String, balance: Decimal, address: String) {
         self.symbol = symbol
@@ -20,13 +16,8 @@ public class Asset {
         self.address = address
     }
 
-    public var balanceObservable: Observable<Decimal> {
-        balanceSubject.asObservable()
-    }
-
-    public func transactionsObservable(filterType: TransactionFilterType? = nil) -> Observable<[TransactionInfo]> {
+    public func transactionsPublisher(filterType: TransactionFilterType? = nil) -> some Publisher<[TransactionInfo], Never> {
         transactionsSubject
-                .asObservable()
                 .map { [weak self] (transactions: [TransactionInfo]) -> [TransactionInfo] in
                     guard let address = self?.address else {
                         return []
