@@ -20,13 +20,13 @@ class SyncState: Record {
         case transactionSyncedUntilTime
     }
     
-    required init(row: Row) {
+    required init(row: Row) throws {
         transactionSyncedUntilTime = row[Columns.transactionSyncedUntilTime]
         
-        super.init(row: row)
+        try super.init(row: row)
     }
     
-    override func encode(to container: inout PersistenceContainer) {
+    override func encode(to container: inout PersistenceContainer) throws {
         container[Columns.primaryKey] = primaryKey
         container[Columns.transactionSyncedUntilTime] = transactionSyncedUntilTime
     }

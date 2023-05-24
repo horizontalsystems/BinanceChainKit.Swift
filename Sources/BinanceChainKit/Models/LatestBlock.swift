@@ -26,12 +26,12 @@ class LatestBlock: Record {
         case time
     }
     
-    required init(row: Row) {
+    required init(row: Row) throws {
         height = row[Columns.height]
         hash = row[Columns.hash]
         time = row[Columns.time]
         
-        super.init(row: row)
+        try super.init(row: row)
     }
     
     init?(syncInfo: [String: Any]) {
@@ -58,7 +58,7 @@ class LatestBlock: Record {
         super.init()
     }
     
-    override func encode(to container: inout PersistenceContainer) {
+    override func encode(to container: inout PersistenceContainer) throws {
         container[Columns.primaryKey] = primaryKey
         container[Columns.height] = height
         container[Columns.hash] = hash

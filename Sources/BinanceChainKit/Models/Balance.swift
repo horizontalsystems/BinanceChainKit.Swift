@@ -21,14 +21,14 @@ class Balance: Record {
         case symbol
     }
 
-    required init(row: Row) {
+    required init(row: Row) throws {
         symbol = row[Columns.symbol]
         amount = row[Columns.amount]
 
-        super.init(row: row)
+        try super.init(row: row)
     }
 
-    override func encode(to container: inout PersistenceContainer) {
+    override func encode(to container: inout PersistenceContainer) throws {
         container[Columns.symbol] = symbol
         container[Columns.amount] = amount
     }
