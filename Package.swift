@@ -14,7 +14,7 @@ let package = Package(
             ),
         ],
         dependencies: [
-            .package(url: "https://github.com/groue/GRDB.swift.git", .upToNextMajor(from: "5.0.0")),
+            .package(url: "https://github.com/groue/GRDB.swift.git", .upToNextMajor(from: "6.0.0")),
             .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.6.0"),
             .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "4.0.0"),
             .package(url: "https://github.com/horizontalsystems/HdWalletKit.Swift.git", .upToNextMajor(from: "1.2.1")),
