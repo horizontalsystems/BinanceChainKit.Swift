@@ -50,7 +50,7 @@ class Transaction: Record {
         case memo
     }
 
-    required init(row: Row) {
+    required init(row: Row) throws {
         hash = row[Columns.hash]
         blockHeight = row[Columns.blockNumber]
         date = row[Columns.date]
@@ -61,10 +61,10 @@ class Transaction: Record {
         symbol = row[Columns.symbol]
         memo = row[Columns.memo]
 
-        super.init(row: row)
+        try super.init(row: row)
     }
 
-    override public func encode(to container: inout PersistenceContainer) {
+    override public func encode(to container: inout PersistenceContainer) throws {
         container[Columns.hash] = hash
         container[Columns.blockNumber] = blockHeight
         container[Columns.date] = date
