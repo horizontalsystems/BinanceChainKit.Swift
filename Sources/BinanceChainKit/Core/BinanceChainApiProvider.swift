@@ -353,6 +353,10 @@ extension BinanceChainApiProvider: IApiProvider {
         do {
             return try await account(address: address)
         } catch {
+            if let networkError = error as? NetworkManager.ResponseError, networkError.statusCode == 404 {
+                // New account
+                return Account()
+            }
             if let afError = error as? AFError, case let .responseValidationFailed(reason) = afError, case let .unacceptableStatusCode(code) = reason, code == 404 {
                 // New account
                 return Account()
