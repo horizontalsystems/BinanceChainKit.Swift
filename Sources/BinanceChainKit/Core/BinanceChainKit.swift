@@ -307,3 +307,12 @@ extension BinanceChainKit {
     }
 
 }
+
+extension BinanceChainKit {
+    public static func firstAddress(seed: Data, networkType: NetworkType) throws -> String {
+        let helper = segWitHelper(networkType: networkType)
+        let wallet = try wallet(seed: seed, segWitHelper: helper)
+        
+        return wallet.address
+    }
+}
