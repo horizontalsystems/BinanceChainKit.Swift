@@ -37,7 +37,7 @@ class BalanceManager {
         logger?.debug("Balances received for \(account.balances.map { "\($0.symbol): \($0.free)" }.joined(separator: ", "))")
 
         let oldBalances = storage.allBalances()
-        let balances = account.balances.map { Balance(symbol: $0.symbol, amount: Decimal($0.free)) }
+        let balances = account.balances.map { Balance(symbol: $0.symbol, amount: $0.free) }
         var toRemove = [Balance]()
 
         for oldBalance in oldBalances {

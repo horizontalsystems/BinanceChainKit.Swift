@@ -71,9 +71,9 @@ class AccountSequence: CustomStringConvertible {
 
 public class ApiBalance: CustomStringConvertible {
     public var symbol: String = ""
-    public var free: Double = 0
-    public var locked: Double = 0
-    public var frozen: Double = 0
+    public var free: Decimal = 0
+    public var locked: Decimal = 0
+    public var frozen: Decimal = 0
 }
 
 class Token: CustomStringConvertible {

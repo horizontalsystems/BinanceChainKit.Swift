@@ -211,9 +211,9 @@ class Parser {
     func parseBalance(_ json: JSON) -> ApiBalance {
         let balance = ApiBalance()
         balance.symbol = json["symbol"].string ?? json["a"].stringValue
-        balance.free = json["free"].doubleString ?? json["f"].doubleValue
-        balance.locked = json["locked"].doubleString ?? json["l"].doubleValue
-        balance.frozen = json["frozen"].doubleString ?? json["r"].doubleValue
+        balance.free = json["free"].string.flatMap { Decimal(string: $0) } ?? Decimal(json["f"].doubleValue)
+        balance.locked = json["locked"].string.flatMap { Decimal(string: $0) } ?? Decimal(json["l"].doubleValue)
+        balance.frozen = json["frozen"].string.flatMap { Decimal(string: $0) } ?? Decimal(json["r"].doubleValue)
         return balance
     }
 
