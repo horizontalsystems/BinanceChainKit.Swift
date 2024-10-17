@@ -1,3 +1,4 @@
+import Alamofire
 import Foundation
 import SwiftyJSON
 
@@ -110,7 +111,7 @@ extension String {
 
 }
 
-extension Dictionary where Key == String, Value == Any {
+extension Parameters {
 
     var query: String {
         let items: [URLQueryItem] = self.compactMap { URLQueryItem(name: $0.key, value: String(describing: $0.value)) }
